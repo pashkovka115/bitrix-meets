@@ -6,21 +6,19 @@ use Bitrix\Main\Entity;
 use Bitrix\Main\ORM\Query\Join;
 use Bitrix\Main\ORM\Fields\Relations\Reference;
 
+/**
+ * Class for ORM Entity Room
+ * @package    ylab
+ * @subpackage meetings
+ */
 class RoomTable extends Entity\DataManager
 {
+    /**
+     * @return string
+     */
     public static function getTableName(): string
     {
         return 'y_meetings_room';
-    }
-
-    public static function getUfId(): string
-    {
-        return 'ROOM_YLAB';
-    }
-
-    public static function getConnectionName(): string
-    {
-        return 'default';
     }
 
     /**
@@ -29,24 +27,46 @@ class RoomTable extends Entity\DataManager
      */
     public static function getMap(): array
     {
-        return array(
+        return [
             //ID
-            new Entity\IntegerField('ID', array(
+            new Entity\IntegerField('ID', [
                 'primary' => true,
-                'autocomplete' => true
-            )),
+                'autocomplete' => true,
+                'validation' => function () {
+                    return [
+                        //Регулярное выражение для проверки ID - только цифры
+                        new Entity\Validator\RegExp('[0-9]+')
+                    ];
+                },
+            ]),
             //Название комнаты
-            new Entity\StringField('NAME', array(
+            new Entity\StringField('NAME', [
                 'required' => true,
-            )),
+                'validation' => function () {
+                    return [
+                        //Регулярное выражение для проверки названия комнаты - только латиница + кириллица и цифры
+                        //и начало строки только с букв
+                        new Entity\Validator\RegExp('^[а-яА-ЯёЁa-zA-Z0-9]+$'),
+                        //Проверка на минимальную и максимальную длину строки
+                        new Entity\Validator\Length(3, 15),
+                    ];
+                },
+            ]),
             //Активность
-            new Entity\BooleanField('ACTIVITY', array(
+            new Entity\BooleanField('ACTIVITY', [
                 'required' => true,
-            )),
+                'values' => ['N', 'Y']
+            ]),
             //ID интеграции
-            new Entity\IntegerField('INTEGRATION_ID', array(
-                'required' => true
-            )),
+            new Entity\IntegerField('INTEGRATION_ID', [
+                'required' => true,
+                'validation' => function () {
+                    return [
+                        //Регулярное выражение для проверки ID - только цифры
+                        new Entity\Validator\RegExp('[0-9]+')
+                    ];
+                },
+            ]),
             //JOIN на интеграцию (отношение "1 интеграция - N комнат")
             (new Reference(
                 'INTEGRATION',
@@ -54,6 +74,6 @@ class RoomTable extends Entity\DataManager
                 Join::on('this.INTEGRATION_ID', 'ref.ID')
             ))
                 ->configureJoinType('inner')
-        );
+        ];
     }
 }
