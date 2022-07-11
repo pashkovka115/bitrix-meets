@@ -3,6 +3,7 @@
 namespace Ylab\Meetings;
 
 use Bitrix\Main\Entity;
+use Bitrix\Main\ORM\Fields\Relations\OneToMany;
 
 class IntegrationTable extends Entity\DataManager
 {
@@ -20,7 +21,6 @@ class IntegrationTable extends Entity\DataManager
     {
         return 'default';
     }
-
     /**
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Bitrix\Main\SystemException
@@ -53,6 +53,9 @@ class IntegrationTable extends Entity\DataManager
             new Entity\StringField('PASSWORD', array(
                 'required' => true
             )),
+            //Обратный референс (для реализации двунаправленности) (отношение "1 интеграция - N комнат")
+            (new OneToMany('ROOMS', RoomTable::class, 'INTEGRATION'))
+                ->configureJoinType('inner'),
         );
     }
 }

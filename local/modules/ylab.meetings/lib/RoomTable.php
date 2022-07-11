@@ -47,7 +47,7 @@ class RoomTable extends Entity\DataManager
             new Entity\IntegerField('INTEGRATION_ID', array(
                 'required' => true
             )),
-            //JOIN на интеграцию
+            //JOIN на интеграцию (отношение "1 интеграция - N комнат")
             (new Reference(
                 'INTEGRATION',
                 IntegrationTable::class,
