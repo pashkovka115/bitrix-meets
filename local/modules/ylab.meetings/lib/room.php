@@ -32,17 +32,17 @@ class RoomTable extends Entity\DataManager
             new Entity\IntegerField('ID', [
                 'primary' => true,
                 'autocomplete' => true,
-                'validation' => function () {
+                /*'validation' => function () {
                     return [
                         //Регулярное выражение для проверки ID - только цифры
                         new Entity\Validator\RegExp('[0-9]+')
                     ];
-                },
+                },*/
             ]),
             //Название комнаты
             new Entity\StringField('NAME', [
                 'required' => true,
-                'validation' => function () {
+                /*'validation' => function () {
                     return [
                         //Регулярное выражение для проверки названия комнаты - только латиница + кириллица и цифры
                         //и начало строки только с букв
@@ -50,7 +50,7 @@ class RoomTable extends Entity\DataManager
                         //Проверка на минимальную и максимальную длину строки
                         new Entity\Validator\Length(3, 15),
                     ];
-                },
+                },*/
             ]),
             //Активность
             new Entity\BooleanField('ACTIVITY', [
@@ -60,12 +60,12 @@ class RoomTable extends Entity\DataManager
             //ID интеграции
             new Entity\IntegerField('INTEGRATION_ID', [
                 'required' => true,
-                'validation' => function () {
+                /*'validation' => function () {
                     return [
                         //Регулярное выражение для проверки ID - только цифры
                         new Entity\Validator\RegExp('[0-9]+')
                     ];
-                },
+                },*/
             ]),
             //JOIN на интеграцию (отношение "1 интеграция - N комнат")
             (new Reference(
