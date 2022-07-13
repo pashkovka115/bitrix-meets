@@ -47,9 +47,6 @@ class RoomTable extends Entity\DataManager
                 'title' => Loc::getMessage('ROOM_ENTITY_NAME_FIELD'),
                 'validation' => function () {
                     return [
-                        //Регулярное выражение для проверки названия комнаты - только латиница + кириллица и цифры
-                        //и начало строки только с букв
-                        new Entity\Validator\RegExp('^[а-яА-ЯёЁa-zA-Z0-9]+$'),
                         //Проверка на минимальную и максимальную длину строки
                         new Entity\Validator\Length(3, 15),
                     ];
