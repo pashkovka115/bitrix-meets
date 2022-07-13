@@ -75,12 +75,6 @@ class IntegrationTable extends Entity\DataManager
                 'title' => Loc::getMessage('INTEGRATION_ENTITY_LOGIN_FIELD'),
                 'validation' => function () {
                     return [
-                        /*
-                         * Регулярное выражение для проверки логина
-                         * символы могут быть буквы и цифры,
-                         * первый символ обязательно буква
-                        */
-                        new Entity\Validator\RegExp('^[a-zA-Z][a-zA-Z0-9-_\.]$'),
                         //Проверка на минимальную и максимальную длину строки
                         new Entity\Validator\Length(4, 15),
                     ];
