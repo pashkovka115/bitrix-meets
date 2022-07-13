@@ -46,9 +46,9 @@ class IntegrationTable extends Entity\DataManager
                 'title' => Loc::getMessage('INTEGRATION_ENTITY_NAME_FIELD'),
                 'validation' => function () {
                     return [
-                        //Регулярное выражение для проверки латиницы и цифр
+                        //Регулярное выражение для проверки латиницы и цифр и пробелов
                         //и начало строки только с букв
-                        new Entity\Validator\RegExp('^[a-zA-Z0-9]+$'),
+                        new Entity\Validator\RegExp('^[a-zA-Z0-9 ]+$'),
                     ];
                 },
             ]),
@@ -92,12 +92,6 @@ class IntegrationTable extends Entity\DataManager
                 'title' => Loc::getMessage('INTEGRATION_ENTITY_PASSWORD_FIELD'),
                 'validation' => function () {
                     return [
-                        /*
-                         * Регулярное выражение для проверки логина
-                         * cтрочные и прописные латинские буквы, цифры, спецсимволы. минимум 8 символов
-                        */
-                        new Entity\Validator\RegExp('(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z
-                        ]).*$'),
                         //Проверка на минимальную и максимальную длину строки
                         new Entity\Validator\Length(4, 15),
                     ];
