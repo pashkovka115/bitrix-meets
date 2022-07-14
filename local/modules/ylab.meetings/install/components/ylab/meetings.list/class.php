@@ -36,7 +36,7 @@ class MeetingsListComponent extends CBitrixComponent
   private $ormClaccName;
   /** @var array $columnFields Набор полей колонок грида */
   private $columnFields;
-  /** @var array $filterFields Набор полей колонок грида */
+  /** @var array $filterFields Набор полей доступных для фильтрации */
   private $filterFields;
 
 
