@@ -81,7 +81,7 @@ class MeetingsListComponent extends CBitrixComponent
   {
     $this->arResult['GRID_ID'] = $this->getGridId();
     $this->arResult['GRID_BODY'] = $this->getGridBody();
-    $this->arResult['GRID_HEAD'] = $this->getGridHead($this->columnFields);
+    $this->arResult['GRID_HEAD'] = $this->getGridHead();
     $this->arResult['GRID_NAV'] = $this->getGridNav();
   }
 
@@ -155,7 +155,7 @@ class MeetingsListComponent extends CBitrixComponent
    * @param array $columnFields
    * @return array
    */
-  private function getGridHead(array $columnFields): array
+  private function getGridHead(): array
   {
 
     $ormNam = 'Ylab\Meetings\\' . $this->ormClaccName;
@@ -166,7 +166,7 @@ class MeetingsListComponent extends CBitrixComponent
 
       $arr = [];
 
-      if (in_array($mapObject->getName(), $columnFields)) {
+      if (in_array($mapObject->getName(), $this->columnFields)) {
 
         $arr['id'] = $mapObject->getName();
         $arr['name'] = $mapObject->getTitle();
