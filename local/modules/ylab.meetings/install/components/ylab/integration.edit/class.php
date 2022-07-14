@@ -74,10 +74,12 @@ class YlabIntegrationsEditComponent extends CBitrixComponent
         return $result;
     }
 
-    private
-    function editIntegration($id): bool
-    {
-        /** @var Bitrix\Main\Entity\UpdateResult $result */
+    //Предположительная реализация методов для редактирования и удаления интеграций (до стыковки с гридами)
+    /*
+        private
+        function editIntegration($id): bool
+        {
+            /** @var Bitrix\Main\Entity\UpdateResult $result *//*
         $result = IntegrationTable::update($id, array(
             'NAME' => '',
             'ACTIVITY' => '',
@@ -88,13 +90,14 @@ class YlabIntegrationsEditComponent extends CBitrixComponent
 
         return $result->isSuccess();
     }
-
+*/
+    /*
     private
     function deleteIntegration($id): bool
     {
-        /** @var Bitrix\Main\Entity\UpdateResult $result */
+        /** @var Bitrix\Main\Entity\UpdateResult $result *//*
         $result = IntegrationTable::delete($id);
 
         return $result->isSuccess();
-    }
+    }*/
 }
