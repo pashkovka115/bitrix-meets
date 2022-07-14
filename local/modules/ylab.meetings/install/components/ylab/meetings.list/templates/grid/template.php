@@ -2,19 +2,6 @@
     die();
 }
 ?>
-<?php //$APPLICATION->includeComponent(
-//  'bitrix:main.ui.filter',
-//  '',
-//  [
-//    'FILTER_ID' => $arResult['GRID_ID'],
-//    'GRID_ID' => $arResult['GRID_ID'],
-//    'FILTER' => $arResult['GRID_FILTER'],
-//    'VALUE_REQUIRED_MODE' => true,
-//    'ENABLE_LIVE_SEARCH' => true,
-//    'ENABLE_LABEL' => true
-//  ],
-//  $component
-//); ?>
 
 <div class="">
   <?php

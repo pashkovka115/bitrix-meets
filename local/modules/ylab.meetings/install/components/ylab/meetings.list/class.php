@@ -6,14 +6,22 @@ use \Bitrix\Main\Grid\Options as GridOptions;
 use \Bitrix\Main\Localization\Loc;
 use \Bitrix\Iblock\PropertyEnumerationTable;
 use Bitrix\Main\UI\PageNavigation;
+use Bitrix\Seo\Engine\Bitrix;
+use Ylab\Meetings\IntegrationTable;
 use Ylab\Meetings\RoomTable;
 use \Bitrix\Main\Loader;
 use \CBitrixComponent;
 use \Exception;
 use \Bitrix\Main\ORM;
-//use \Bitrix\Main\UI\Filter\Options;
+use \Bitrix\Main\UI\Filter\Options;
+use Bitrix\Main\ORM\Fields\IntegerField;
+
+use \Bitrix\Main\Entity\Query;
+
 
 /**
+ * Класс для отображения списков
+ *
  * Class MeetingsListComponent
  * @package YLab\Components
  */
@@ -26,8 +34,10 @@ class MeetingsListComponent extends CBitrixComponent
   private $list_id;
   /** @var string $ormClaccName Имя класса ORM */
   private $ormClaccName;
-  /** @var array $ormClaccName Набор полей колонок грида */
+  /** @var array $columnFields Набор полей колонок грида */
   private $columnFields;
+  /** @var array $filterFields Набор полей колонок грида */
+  private $filterFields;
 
 
   /**
@@ -35,14 +45,14 @@ class MeetingsListComponent extends CBitrixComponent
    * @return array
    * @throws \Bitrix\Main\LoaderException
    */
-  public function onPrepareComponentParams($arParams)
+  public function onPrepareComponentParams($arParams): array
   {
 
     $this->templateName = $this->GetTemplateName();
     $this->list_id = $arParams['LIST_ID'];
     $this->ormClaccName = $arParams['ORM_NAME'];
-
     $this->columnFields = $arParams['COLUMN_FIELDS'];
+    $this->filterFields = $arParams['FILTER_FIELDS'];
 
     return $arParams;
   }
@@ -55,6 +65,8 @@ class MeetingsListComponent extends CBitrixComponent
    */
   public function executeComponent()
   {
+    Loader::includeModule('ylab.meetings');
+
     if ($this->templateName == 'grid') {
       $this->showByGrid();
     }
@@ -87,14 +99,10 @@ class MeetingsListComponent extends CBitrixComponent
     foreach ($arItems as $arItem) {
       $arGridElement = [];
 
-      foreach ($this->columnFields as $k => $v) {
-        if(is_numeric($k)) {
+      foreach ($this->columnFields as $k => $v)
+      {
           $arGridElement['data'][$v] = $arItem[$v];
-        } else {
-          $arGridElement['data'][$k] = $arItem[$k];
-        }
       }
-
 
       $arGridElement['actions'] = [
         [
@@ -113,41 +121,22 @@ class MeetingsListComponent extends CBitrixComponent
   }
 
   /**
-   * Получим элементы ORM
-   * @return
+   * Получение элементов ORM
+   *
+   * @return ORM\Query\Result
    */
-  public function getElements()
+  public function getElements(): ORM\Query\Result
   {
 
-    Loader::includeModule('ylab.meetings');
+    $query = new ORM\Query\Query('Ylab\Meetings\\' . $this->ormClaccName);
 
-    $query = new ORM\Query\Query('Ylab\Meetings\\'. $this->ormClaccName);
-
-    $result = $query
+    $queryResult = $query
       ->setFilter([])
       ->setSelect($this->columnFields)
       ->exec();
 
-    return $result;
-  }
+    return $queryResult;
 
-  /**
-   * Параметры навигации грида
-   *
-   * @return PageNavigation
-   */
-  private function getGridNav(): PageNavigation
-  {
-
-    $grid_options = new GridOptions($this->getGridId());
-    $nav_params = $grid_options->GetNavParams();
-
-    $nav = new PageNavigation('request_list');
-    $nav->allowAllRecords(true)
-      ->setPageSize($nav_params['nPageSize'])
-      ->initFromUri();
-
-    return $nav;
   }
 
   /**
@@ -157,63 +146,64 @@ class MeetingsListComponent extends CBitrixComponent
    */
   private function getGridId(): string
   {
-    return 'ylab_meetings_list_' . $this->list_id;
+    return 'ylab_meetings_' . $this->list_id;
   }
 
   /**
    * Возращает заголовки таблицы.
    *
+   * @param array $columnFields
    * @return array
    */
   private function getGridHead(array $columnFields): array
   {
-    $gridHead = [];
-    foreach ($columnFields as $k => $v) {
-      $arr = [];
-      if(is_numeric($k)) {
-        $arr['id'] = $v;
-        $arr['name'] = $v;
-        $arr['default'] = true;
-      } else {
-        $arr['id'] = $k;
-        $arr['name'] = $k;
-        $arr['default'] = true;
-      }
-      array_push( $gridHead, $arr );
-    }
 
-//    echo '<pre>';
-//    print_r($gridHead);
-//    echo '<pre>';
+    $ormNam = 'Ylab\Meetings\\' . $this->ormClaccName;
+    $mapObjects = $ormNam::getMap();
+
+    $gridHead = [];
+    foreach ($mapObjects as $mapObject) {
+
+      $arr = [];
+
+      if (in_array($mapObject->getName(), $columnFields)) {
+
+        $arr['id'] = $mapObject->getName();
+        $arr['name'] = $mapObject->getTitle();
+        $arr['default'] = true;
+
+      }
+      array_push($gridHead, $arr);
+    }
 
     return $gridHead;
 
-//    return [
-//      [
-//        'id' => 'ID',
-//        'name' => 'ID',
-//        'default' => true,
-//        'sort' => 'ID',
-//      ],
-//      [
-//        'id' => 'NAME',
-////                'name' => Loc::getMessage('MYLAB.EMAIL.LIST.CLASS.NAME'),
-//        'name' => 'Название переговорной',
-//        'default' => true,
-//      ],
-//      [
-//        'id' => 'ACTIVITY',
-////                'name' => Loc::getMessage('MYLAB.EMAIL.LIST.CLASS.EMAIL'),
-//        'name' => 'Активность',
-//        'default' => true,
-//      ],
-//      [
-//        'id' => 'INTEGRATION_ALIAS',
-////                'name' => Loc::getMessage('MYLAB.EMAIL.LIST.CLASS.CITY'),
-//        'name' => 'Интеграция',
-//        'default' => true,
-//      ],
-//    ];
+  }
+
+  /**
+   * Возвращает единственный экземпляр настроек грида.
+   *
+   * @return GridOptions
+   */
+  private function getObGridParams(): GridOptions
+  {
+    return $this->gridOption ?? $this->gridOption = new GridOptions($this->getGridId());
+  }
+
+  /**
+   * Параметры навигации грида
+   *
+   * @return PageNavigation
+   */
+  private function getGridNav(): PageNavigation
+  {
+    if ($this->gridNav === null) {
+      $this->gridNav = new PageNavigation($this->getGridId());
+      $this->gridNav->allowAllRecords(true)->setPageSize($this->getObGridParams()->GetNavParams()['nPageSize'])
+        ->initFromUri();
+    }
+
+    return $this->gridNav;
   }
 
 }
