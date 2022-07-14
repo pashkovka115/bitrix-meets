@@ -48,7 +48,7 @@ class IntegrationTable extends Entity\DataManager
                     return [
                         //Регулярное выражение для проверки латиницы и цифр и пробелов
                         //и начало строки только с букв
-                        new Entity\Validator\RegExp('^[a-zA-Z0-9 ]+$'),
+                        new Entity\Validator\RegExp('(^[a-zA-Z0-9 ]+$)'),
                     ];
                 },
             ]),
@@ -65,7 +65,7 @@ class IntegrationTable extends Entity\DataManager
                 'validation' => function () {
                     return [
                         //Регулярное выражение для проверки пути
-                        new Entity\Validator\RegExp('^(.+)\/([^\/]+)$')
+                        new Entity\Validator\RegExp('(^(.+)(\\\\|\/)([^\/]+)$)')
                     ];
                 },
             ]),

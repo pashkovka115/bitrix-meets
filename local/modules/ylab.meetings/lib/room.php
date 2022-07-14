@@ -61,7 +61,7 @@ class RoomTable extends Entity\DataManager
             //ID интеграции
             new Entity\IntegerField('INTEGRATION_ID', [
                 'required' => true,
-                Loc::getMessage('ROOM_ENTITY_INTEGRATION_ID_FIELD'),
+                'title' => Loc::getMessage('ROOM_ENTITY_INTEGRATION_ID_FIELD'),
                 'validation' => function () {
                     return [
                         //Регулярное выражение для проверки ID - только цифры
