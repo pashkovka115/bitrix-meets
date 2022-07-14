@@ -3,8 +3,23 @@
 use Bitrix\Main\Loader;
 use Ylab\Meetings\RoomTable;
 
+
+/**
+ * Class ShowRoomsComponent
+ *
+ * @package YLab\Components
+ */
+
 class ShowRoomsComponent extends CBitrixComponent
 {
+    /**
+     * Method executeComponent
+     *
+     * @param array $arResult
+     * @return mixed|void
+     * @throws Exception
+     */
+
     public function executeComponent()
     {
         Loader::includeModule('ylab.meetings');
