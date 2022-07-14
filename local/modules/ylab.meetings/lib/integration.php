@@ -4,6 +4,7 @@ namespace Ylab\Meetings;
 
 use Bitrix\Main\Entity;
 use Bitrix\Main\ORM\Fields\Relations\OneToMany;
+use Bitrix\Main\Localization\Loc;
 
 /**
  * Class for ORM Entity Integration
@@ -31,6 +32,7 @@ class IntegrationTable extends Entity\DataManager
             new Entity\IntegerField('ID', [
                 'primary' => true,
                 'autocomplete' => true,
+                'title' => Loc::getMessage('INTEGRATION_ENTITY_ID_FIELD'),
                 'validation' => function () {
                     return [
                         //Регулярное выражение для проверки - только цифры
@@ -41,11 +43,12 @@ class IntegrationTable extends Entity\DataManager
             //Название
             new Entity\StringField('NAME', [
                 'required' => true,
+                'title' => Loc::getMessage('INTEGRATION_ENTITY_NAME_FIELD'),
                 'validation' => function () {
                     return [
-                        //Регулярное выражение для проверки латиницы и цифр
+                        //Регулярное выражение для проверки латиницы и цифр и пробелов
                         //и начало строки только с букв
-                        new Entity\Validator\RegExp('^[a-zA-Z0-9]+$'),
+                        new Entity\Validator\RegExp('(^[a-zA-Z0-9 ]+$)'),
                     ];
                 },
             ]),
@@ -53,28 +56,25 @@ class IntegrationTable extends Entity\DataManager
             new Entity\BooleanField('ACTIVITY', [
                 'required' => true,
                 'values' => ['N', 'Y'],
+                'title' => Loc::getMessage('INTEGRATION_ENTITY_ACTIVITY_FIELD'),
             ]),
             //Ссылка на класс интеграции
             new Entity\StringField('INTEGRATION_REF', [
                 'required' => true,
+                'title' => Loc::getMessage('INTEGRATION_ENTITY_INTEGRATION_REF_FIELD'),
                 'validation' => function () {
                     return [
                         //Регулярное выражение для проверки пути
-                        new Entity\Validator\RegExp('^(.+)\/([^\/]+)$')
+                        new Entity\Validator\RegExp('(^(.+)(\\\\|\/)([^\/]+)$)')
                     ];
                 },
             ]),
             //Логин от интеграции
             new Entity\StringField('LOGIN', [
                 'required' => true,
+                'title' => Loc::getMessage('INTEGRATION_ENTITY_LOGIN_FIELD'),
                 'validation' => function () {
                     return [
-                        /*
-                         * Регулярное выражение для проверки логина
-                         * символы могут быть буквы и цифры,
-                         * первый символ обязательно буква
-                        */
-                        new Entity\Validator\RegExp('^[a-zA-Z][a-zA-Z0-9-_\.]$'),
                         //Проверка на минимальную и максимальную длину строки
                         new Entity\Validator\Length(4, 15),
                     ];
@@ -83,14 +83,9 @@ class IntegrationTable extends Entity\DataManager
             //Пароль от интеграции
             new Entity\StringField('PASSWORD', [
                 'required' => true,
+                'title' => Loc::getMessage('INTEGRATION_ENTITY_PASSWORD_FIELD'),
                 'validation' => function () {
                     return [
-                        /*
-                         * Регулярное выражение для проверки логина
-                         * cтрочные и прописные латинские буквы, цифры, спецсимволы. минимум 8 символов
-                        */
-                        new Entity\Validator\RegExp('(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z
-                        ]).*$'),
                         //Проверка на минимальную и максимальную длину строки
                         new Entity\Validator\Length(4, 15),
                     ];

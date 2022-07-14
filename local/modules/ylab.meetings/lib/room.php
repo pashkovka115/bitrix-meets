@@ -5,6 +5,7 @@ namespace Ylab\Meetings;
 use Bitrix\Main\Entity;
 use Bitrix\Main\ORM\Query\Join;
 use Bitrix\Main\ORM\Fields\Relations\Reference;
+use Bitrix\Main\Localization\Loc;
 
 /**
  * Class for ORM Entity Room
@@ -32,6 +33,7 @@ class RoomTable extends Entity\DataManager
             new Entity\IntegerField('ID', [
                 'primary' => true,
                 'autocomplete' => true,
+                'title' => Loc::getMessage('ROOM_ENTITY_ID_FIELD'),
                 'validation' => function () {
                     return [
                         //Регулярное выражение для проверки ID - только цифры
@@ -42,11 +44,9 @@ class RoomTable extends Entity\DataManager
             //Название комнаты
             new Entity\StringField('NAME', [
                 'required' => true,
+                'title' => Loc::getMessage('ROOM_ENTITY_NAME_FIELD'),
                 'validation' => function () {
                     return [
-                        //Регулярное выражение для проверки названия комнаты - только латиница + кириллица и цифры
-                        //и начало строки только с букв
-                        new Entity\Validator\RegExp('^[а-яА-ЯёЁa-zA-Z0-9]+$'),
                         //Проверка на минимальную и максимальную длину строки
                         new Entity\Validator\Length(3, 15),
                     ];
@@ -55,11 +55,13 @@ class RoomTable extends Entity\DataManager
             //Активность
             new Entity\BooleanField('ACTIVITY', [
                 'required' => true,
-                'values' => ['N', 'Y']
+                'values' => ['N', 'Y'],
+                'title' => Loc::getMessage('ROOM_ENTITY_ACTIVITY_FIELD'),
             ]),
             //ID интеграции
             new Entity\IntegerField('INTEGRATION_ID', [
                 'required' => true,
+                'title' => Loc::getMessage('ROOM_ENTITY_INTEGRATION_ID_FIELD'),
                 'validation' => function () {
                     return [
                         //Регулярное выражение для проверки ID - только цифры
