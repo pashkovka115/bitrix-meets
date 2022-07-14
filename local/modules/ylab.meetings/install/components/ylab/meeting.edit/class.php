@@ -1,28 +1,37 @@
 <?php
 
-use \Bitrix\Main\Loader;
-use \Bitrix\Main\Application;
-use Bitrix\Main\Localization\Loc;
-use \Ylab\Meetings\RoomTable;
-use \Ylab\Meetings\IntegrationTable;
-
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
 
+use Bitrix\Main\Application;
+use Bitrix\Main\Loader;
+use Bitrix\Main\Localization\Loc;
+use Ylab\Meetings\IntegrationTable;
+use Ylab\Meetings\RoomTable;
+
 
 class YlabMeetingEdit extends CBitrixComponent
 {
+    /**
+     * @return bool
+     * @throws \Bitrix\Main\LoaderException
+     * Проверяет подключение модулей необходимых для работы этого компонента
+     */
     private function checkModules()
     {
         if (!Loader::includeModule('ylab.meetings')) {
-            throw new \Exception('Не загружены модули необходимые для работы модуля');
+            throw new \Exception(Loc::getMessage('YLAB.MEETING.EDIT.ERROR.CHECK.COMPONENT'));
         }
 
         return true;
     }
 
 
+    /**
+     * @return CAllMain|CMain
+     * Обёртка для удобства использования над глобальной переменной $APPLICATION
+     */
     private function app()
     {
         global $APPLICATION;
@@ -30,6 +39,11 @@ class YlabMeetingEdit extends CBitrixComponent
     }
 
 
+    /**
+     * @param $params
+     * @return array
+     * Запускается при подготовке входных параметров
+     */
     public function onPrepareComponentParams($params)
     {
         if (is_null($params['ELEMENT_ID'])) {
@@ -42,6 +56,11 @@ class YlabMeetingEdit extends CBitrixComponent
     }
 
 
+    /**
+     * @return mixed|void|null
+     * @throws \Bitrix\Main\LoaderException
+     * Запуск компонента
+     */
     public function executeComponent()
     {
         $this->checkModules();
@@ -58,6 +77,10 @@ class YlabMeetingEdit extends CBitrixComponent
     }
 
 
+    /**
+     * @param $request
+     * Обработка POST запроса
+     */
     public function handlerPost($request)
     {
         $params = $request->toArray();
@@ -89,6 +112,9 @@ class YlabMeetingEdit extends CBitrixComponent
     }
 
 
+    /**
+     * Обработка GET запроса
+     */
     public function handlerGet()
     {
         if ($this->arParams['ELEMENT_ID']) {
