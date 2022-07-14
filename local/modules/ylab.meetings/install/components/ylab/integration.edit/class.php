@@ -13,7 +13,7 @@ use Bitrix\Main\ORM\Data\DataManager;
  * @package ylab
  * @subpackage meetings
  */
-class YlabIntegrationseditComponent extends CBitrixComponent
+class YlabIntegrationsEditComponent extends CBitrixComponent
 {
 
     /**
@@ -51,7 +51,6 @@ class YlabIntegrationseditComponent extends CBitrixComponent
                 }
                 break;
         }
-
     }
 
 
