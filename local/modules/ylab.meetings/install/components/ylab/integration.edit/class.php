@@ -22,6 +22,8 @@ class YlabIntegrationsEditComponent extends CBitrixComponent
      */
     public function executeComponent()
     {
+        Loader::includeModule('ylab.meetings');
+
         $context = Application::getInstance()->getContext();
         $request = $context->getRequest();
         switch ($request["step"]) {
