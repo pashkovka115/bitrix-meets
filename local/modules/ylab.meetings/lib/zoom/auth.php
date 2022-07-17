@@ -2,6 +2,7 @@
 
 namespace Ylab\Meeting\Zoom;
 
+use Bitrix\Main\Diag\Debug;
 use GuzzleHttp\Client;
 
 class Auth
@@ -14,6 +15,7 @@ class Auth
      * Нужен только для идентификации в БД Битрикса
      */
     private $tokenName = 'zoom.token';
+
 
     public function __construct()
     {
@@ -30,7 +32,10 @@ class Auth
     {
         $this->deleteToken();
         $token = $this->getNewToken();
-        $this->saveToken($token);
+        if ($token) {
+            echo 'перед сохранением';
+            $this->saveToken($token);
+        }
 
         return $token;
     }
@@ -40,6 +45,13 @@ class Auth
      * @return string
      * @throws \GuzzleHttp\Exception\GuzzleException
      * Получает новый токен из сервиса Zoom
+     * [
+        'access_token' => 'jiuyoui...',
+        'token_type' => 'bearer',
+        'refresh_token' => 'jiuyoui...',
+        'expires_in' => 3599,
+        'scope' => 'meeting:write:admin'
+        ];
      */
     public function getNewToken()
     {
@@ -58,14 +70,13 @@ class Auth
                     "redirect_uri" => $this->settings->getRedirectURI()
                 ],
             ]);
-
             $token = json_decode($response->getBody()->getContents(), true);
 
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
 
-        return $token;
+        return isset($token['access_token']) ? $token['access_token'] : false;
     }
 
 
