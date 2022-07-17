@@ -32,6 +32,6 @@ class Settings
      */
     public function getRedirectURI(): string
     {
-        return 'https://f9d7-45-157-215-252.eu.ngrok.io/oauth-zoom-ylab/authorize';
+        return "https://8f9f-45-157-215-252.eu.ngrok.io/oauth-zoom-ylab/authorize";
     }
 }
