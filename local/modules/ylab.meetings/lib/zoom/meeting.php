@@ -105,6 +105,43 @@ class Meeting
             }
         }
 
+        $data = json_decode($response->getBody());
+
+        return $data;
+    }
+
+
+    public function getById($id)
+    {
+        $uri = '/v2/meetings/' . $id;
+
+        $client = new Client(['base_uri' => $this->baseUri]);
+
+        if ($this->auth->hasToken()) {
+            $accessToken = $this->auth->getToken();
+        } else {
+            $accessToken = $this->auth->authorization();
+        }
+
+        try {
+            $response = $client->request('GET', $uri, [
+                "headers" => [
+                    "Authorization" => "Bearer $accessToken"
+                ]
+            ]);
+        } catch (\Exception $e) {
+            if (401 == $e->getCode()) {
+                $accessToken = $this->auth->authorization();
+
+                $response = $client->request('GET', $uri, [
+                    "headers" => [
+                        "Authorization" => "Bearer $accessToken"
+                    ]
+                ]);
+            } else {
+                echo $e->getMessage();
+            }
+        }
 
         $data = json_decode($response->getBody());
 
