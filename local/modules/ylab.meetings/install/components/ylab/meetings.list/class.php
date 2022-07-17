@@ -56,17 +56,22 @@ class MeetingsListComponent extends CBitrixComponent
     public function executeComponent()
     {
         if (CModule::IncludeModule('ylab.meetings')) {
+
             Loader::IncludeModule('ylab.meetings');
+
+            if ($this->templateName == 'grid') {
+                $this->showByGrid();
+            } else if ($this->templateName == '' || $this->templateName == '.default') {
+                $this->showByDefault();
+            }
+
+            $this->includeComponentTemplate();
+        } else {
+
+            echo Loc::getMessage('YLAB.MEETING.LIST.CLASS.MESSAGE');
+            echo '<br>';
         }
 
-
-        if ($this->templateName == 'grid') {
-            $this->showByGrid();
-        } else if ($this->templateName == '' || $this->templateName == '.default') {
-            $this->showByDefault();
-        }
-
-        $this->includeComponentTemplate();
     }
 
     /**
