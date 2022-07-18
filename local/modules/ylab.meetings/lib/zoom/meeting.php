@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 class Meeting
 {
     protected Settings $settings;
-    protected $auth;
+    protected Auth $auth;
 
     const BASE_URL = 'https://api.zoom.us';
     const URL_LIST_MEETINGS = '/v2/users/me/meetings';
