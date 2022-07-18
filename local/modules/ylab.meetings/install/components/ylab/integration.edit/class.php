@@ -6,18 +6,16 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 use Bitrix\Main\Application;
 use Bitrix\Main\Loader;
 use Ylab\Meetings\IntegrationTable;
-use Bitrix\Main\ORM\Data\DataManager;
 
 /**
  * Class Component for edit and add integrations
  * @package ylab
  * @subpackage meetings
  */
-class YlabIntegrationsEditComponent extends CBitrixComponent
+class YlabIntegrationEditComponent extends CBitrixComponent
 {
-
     /**
-     * @return mixed|void|null
+     * @throws \Bitrix\Main\LoaderException
      * @throws Exception
      */
     public function executeComponent()
@@ -26,35 +24,95 @@ class YlabIntegrationsEditComponent extends CBitrixComponent
 
         $context = Application::getInstance()->getContext();
         $request = $context->getRequest();
-        switch ($request["step"]) {
-            case NULL:
-                $this->includeComponentTemplate();
-                break;
-            case 'addintegrationform':
-                $this->includeComponentTemplate('addintegration');
-                break;
+        //вызов формы добавления
+        if ($request['step'] == 'addintegrationform') {
+            $this->setTemplateName('edit');
+            $this->includeComponentTemplate('addintegrationform');
+            return;
+        }
+        // добавление и редактирование формах
+        switch ($request['step']) {
             case 'addintegration':
-                $fields['NAME'] = $request['NAME'];
-                $fields['ACTIVITY'] = $request['ACTIVITY'] === 'Y';
-                $fields['INTEGRATION_REF'] = $request['INTEGRATION_REF'];
-                $fields['LOGIN'] = $request['LOGIN'];
-                $fields['PASSWORD'] = $request['PASSWORD'];
-
+                $fields = [
+                    'NAME' => $request['NAME'],
+                    'ACTIVITY' => $request['ACTIVITY'] === 'Y',
+                    'INTEGRATION_REF' => $request['INTEGRATION_REF'],
+                    'LOGIN' => $request['LOGIN'],
+                    'PASSWORD' => $request['PASSWORD']
+                ];
                 $submitResult = $this->addIntegration($fields);
                 if ($submitResult->isSuccess()) {
                     $integration = $submitResult;
                     $this->arResult['ADD_SUCCESS_INTEGRATION_NAME'] = $integration->getData()['NAME'];
                     //вызов главного шаблона с передачей сообщения об успешном добавлении интеграции
                     $this->includeComponentTemplate();
+                    return;
                 } else {
                     $this->arResult['SUBMIT_ERROR'] = $submitResult->getErrorMessages();
                     //вызов шаблона с форма с передачей сообщений об ошибке добавления
-                    $this->includeComponentTemplate('addintegration');
+                    $this->setTemplateName('edit');
+                    $this->includeComponentTemplate('addintegrationform');
+                    return;
                 }
                 break;
-        }
-    }
 
+            case 'editintegration': {
+                    $fields[$request['ID']] = [
+                        'NAME' => $request['NAME'],
+                        'ACTIVITY' => $request['ACTIVITY'] === 'Y',
+                        'INTEGRATION_REF' => $request['INTEGRATION_REF'],
+                        'LOGIN' => $request['LOGIN'],
+                        'PASSWORD' => $request['PASSWORD']
+                    ];
+                    $submitResult = $this->editIntegration($fields);
+                    if ($submitResult->isSuccess()) {
+                        $integration = $submitResult;
+                        $this->arResult['ADD_SUCCESS_INTEGRATION_NAME'] = $integration->getData()['NAME'];
+                        //вызов главного шаблона с передачей сообщения об успешном добавлении интеграции
+                        $this->includeComponentTemplate();
+                        return;
+                    } else {
+                        $this->arResult['SUBMIT_ERROR'] = $submitResult->getErrorMessages();
+                        $this->arResult['ID'] = $request['ID'];
+                        //вызов шаблона с форма с передачей сообщений об ошибке добавления
+                        $this->setTemplateName('edit');
+                        $this->includeComponentTemplate('editintegrationform');
+                        return;
+                    }
+                    break;
+                }
+        }
+
+        $requestData = $request->getValues();
+
+        // бутерброд
+        switch ($requestData['op']) {
+            case 'delete':
+                $this->deleteIntegration($requestData['id']);
+                $this->includeComponentTemplate();
+                break;
+            case 'edit':
+
+                $this->arResult['ID'] = $requestData['id'];
+                $this->setTemplateName('edit');
+                $this->includeComponentTemplate('editintegrationform');
+                return;
+                break;
+        }
+
+        // нижняя панель действий
+        switch ($requestData['action_button_integration_list']) {
+            case 'delete':
+                $this->deleteIntegration($requestData['ID']);
+                $this->includeComponentTemplate();
+                break;
+            case 'edit':
+                $this->editIntegration($requestData['FIELDS']);
+                $this->includeComponentTemplate();
+                break;
+        }
+        $this->includeComponentTemplate();
+    }
 
     /**
      * @param array $fields
@@ -62,7 +120,7 @@ class YlabIntegrationsEditComponent extends CBitrixComponent
      * @throws Exception
      */
     private
-    function addIntegration(array $fields)
+    function addIntegration(array $fields): \Bitrix\Main\ORM\Data\AddResult
     {
 
         $result = IntegrationTable::add(array(
@@ -76,30 +134,42 @@ class YlabIntegrationsEditComponent extends CBitrixComponent
         return $result;
     }
 
-    //Предположительная реализация методов для редактирования и удаления интеграций (до стыковки с гридами)
-    /*
-        private
-        function editIntegration($id): bool
-        {
-            /** @var Bitrix\Main\Entity\UpdateResult $result *//*
-        $result = IntegrationTable::update($id, array(
-            'NAME' => '',
-            'ACTIVITY' => '',
-            'INTEGRATION_REF' => '',
-            'LOGIN' => '',
-            'PASSWORD' => ''
-        ));
-
-        return $result->isSuccess();
-    }
-*/
-    /*
+    /**
+     * @param $id
+     * @return \Bitrix\Main\ORM\Data\DeleteResult
+     * @throws Exception
+     */
     private
-    function deleteIntegration($id): bool
+    function deleteIntegration($id): \Bitrix\Main\ORM\Data\DeleteResult
     {
-        /** @var Bitrix\Main\Entity\UpdateResult $result *//*
-        $result = IntegrationTable::delete($id);
+        /** @var Bitrix\Main\Entity\UpdateResult $result */
+        if (is_array($id)) {
+            foreach ($id as $item)
+                $result = IntegrationTable::delete($item);
+        } else {
+            $result = IntegrationTable::delete($id);
+        }
+        return $result;
+    }
 
-        return $result->isSuccess();
-    }*/
+    /**
+     * @param $fields
+     * @return \Bitrix\Main\Entity\UpdateResult|\Bitrix\Main\ORM\Data\UpdateResult
+     * @throws Exception
+     */
+    private
+    function editIntegration($fields)
+    {
+        /** @var Bitrix\Main\Entity\UpdateResult $result */
+        foreach ($fields as $id => $f)
+            $result = IntegrationTable::update($id, array(
+                'NAME' => $f['NAME'],
+                'ACTIVITY' => $f['ACTIVITY'],
+                'INTEGRATION_REF' => $f['INTEGRATION_REF'],
+                'LOGIN' => $f['LOGIN'],
+                'PASSWORD' => $f['PASSWORD']
+            ));
+
+        return $result;
+    }
 }
