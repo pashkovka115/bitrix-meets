@@ -16,6 +16,7 @@ class Auth
     private $tokenName = 'zoom.token';
 
     const BASE_URL = 'https://zoom.us';
+    const URL_NEW_TOKEN = '/oauth/token';
 
 
     public function __construct()
@@ -58,7 +59,7 @@ class Auth
         try {
             $client = new Client(['base_uri' => self::BASE_URL]);
 
-            $response = $client->request('POST', '/oauth/token', [
+            $response = $client->request('POST', self::URL_NEW_TOKEN, [
                 "headers" => [
                     "Authorization" => "Basic " . base64_encode(
                             $this->settings->getClientId() . ':' . $this->settings->getClientSecret()

@@ -10,6 +10,10 @@ class Meeting
     protected $auth;
 
     const BASE_URL = 'https://api.zoom.us';
+    const URL_LIST_MEETINGS = '/v2/users/me/meetings';
+    const URL_CREATE_MEETING = '/v2/users/me/meetings';
+    const URL_BYID_MEETINNG = '/v2/meetings/';
+    const URL_DELETE_MEETINNG = '/v2/meetings/';
 
 
     public function __construct()
@@ -39,7 +43,7 @@ class Meeting
         }
 
         try {
-            $response = $client->request('POST', '/v2/users/me/meetings', [
+            $response = $client->request('POST', self::URL_CREATE_MEETING, [
                 "headers" => [
                     "Authorization" => "Bearer $accessToken"
                 ],
@@ -76,8 +80,6 @@ class Meeting
      */
     public function list()
     {
-        $uri = '/v2/users/me/meetings';
-
         $client = new Client(['base_uri' => self::BASE_URL]);
 
         if ($this->auth->hasToken()) {
@@ -87,7 +89,7 @@ class Meeting
         }
 
         try {
-            $response = $client->request('GET', $uri, [
+            $response = $client->request('GET', self::URL_LIST_MEETINGS, [
                 "headers" => [
                     "Authorization" => "Bearer $accessToken"
                 ]
@@ -96,7 +98,7 @@ class Meeting
             if (401 == $e->getCode()) {
                 $accessToken = $this->auth->authorization();
 
-                $response = $client->request('GET', $uri, [
+                $response = $client->request('GET', self::URL_LIST_MEETINGS, [
                     "headers" => [
                         "Authorization" => "Bearer $accessToken"
                     ]
@@ -114,7 +116,7 @@ class Meeting
 
     public function getById($id)
     {
-        $uri = '/v2/meetings/' . $id;
+        $uri = self::URL_BYID_MEETINNG . $id;
 
         $client = new Client(['base_uri' => self::BASE_URL]);
 
@@ -151,12 +153,13 @@ class Meeting
 
 
     /**
-     * @param $meeting_id
+     * @param $id
      * @throws \GuzzleHttp\Exception\GuzzleException
      * Удаляет переговорную по id
      */
-    public function delete($meeting_id)
+    public function delete($id)
     {
+        $url = self::URL_DELETE_MEETINNG . $id;
         $client = new Client(['base_uri' => self::BASE_URL]);
 
         if ($this->auth->hasToken()) {
@@ -166,7 +169,7 @@ class Meeting
         }
 
         try {
-            $response = $client->request('DELETE', "/v2/meetings/$meeting_id", [
+            $response = $client->request('DELETE', $url, [
                 "headers" => [
                     "Authorization" => "Bearer $accessToken"
                 ]
@@ -175,7 +178,7 @@ class Meeting
             if (401 == $e->getCode()) {
                 $accessToken = $this->auth->authorization();
 
-                $response = $client->request('DELETE', "/v2/meetings/$meeting_id", [
+                $response = $client->request('DELETE', $url, [
                     "headers" => [
                         "Authorization" => "Bearer $accessToken"
                     ]
