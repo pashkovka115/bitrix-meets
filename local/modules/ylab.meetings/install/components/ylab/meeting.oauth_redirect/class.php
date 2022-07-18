@@ -18,11 +18,7 @@ class YlabMeetingOauthRedirect extends CBitrixComponent
      */
     private function checkModules()
     {
-        if (!Loader::includeModule('ylab.meetings')) {
-            throw new \Exception(Loc::getMessage('YLAB_MEETING_EDIT_ERROR_CHECK_COMPONENT'));
-        }
-
-        return true;
+        return Loader::includeModule('ylab.meetings');
     }
 
     /**
@@ -32,10 +28,15 @@ class YlabMeetingOauthRedirect extends CBitrixComponent
      */
     public function executeComponent()
     {
-        $this->checkModules();
-
-        $auth = new Auth();
-        echo $auth->authorization();
+        if ($this->checkModules()){
+            $auth = new Auth();
+            echo $auth->authorization();
+        }else{
+            ShowMessage([
+                "TYPE"=>"OK",
+                "MESSAGE"=>Loc::getMessage('YLAB_MEETING_EDIT_ERROR_CHECK_COMPONENT')
+            ]);
+        }
     }
 
 }
