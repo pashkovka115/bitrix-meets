@@ -2,6 +2,7 @@
 
 namespace Ylab\Meetings\Zoom;
 
+use Bitrix\Main\Config\Option;
 use Bitrix\Main\Diag\Debug;
 use GuzzleHttp\Client;
 
@@ -87,8 +88,7 @@ class Auth
      */
     public function saveToken($token)
     {
-        global $DB;
-        $DB->Query("INSERT INTO b_option SET NAME='$this->tokenName', MODULE_ID='$this->moduleId', VALUE='$token'");
+        Option::set($this->moduleId, $this->tokenName, $token);
     }
 
 
@@ -98,9 +98,7 @@ class Auth
      */
     public function getToken()
     {
-        global $DB;
-        $row = $DB->Query("SELECT * FROM b_option WHERE NAME='$this->tokenName' AND MODULE_ID='$this->moduleId'")->Fetch();
-        return $row['VALUE'];
+        return Option::get($this->moduleId, $this->tokenName);
     }
 
 
@@ -109,8 +107,7 @@ class Auth
      */
     public function deleteToken()
     {
-        global $DB;
-        $DB->Query("DELETE FROM b_option WHERE NAME='$this->tokenName' AND MODULE_ID='$this->moduleId'");
+        Option::delete($this->moduleId, ['name' => $this->tokenName]);
     }
 
 
@@ -120,8 +117,7 @@ class Auth
      */
     public function updateToken($new_token)
     {
-        global $DB;
-        $DB->Query("UPDATE b_option SET VALUE='$new_token' WHERE NAME='$this->tokenName' AND MODULE_ID='$this->moduleId'");
+        Option::set($this->moduleId, $this->tokenName, $new_token);
     }
 
 
@@ -132,7 +128,6 @@ class Auth
      */
     public function hasToken(): bool
     {
-        global $DB;
-        return (bool)$DB->Query("SELECT * FROM b_option WHERE NAME='$this->tokenName' AND MODULE_ID='$this->moduleId'")->Fetch();
+        return (bool)Option::get($this->moduleId, $this->tokenName, false);
     }
 }
