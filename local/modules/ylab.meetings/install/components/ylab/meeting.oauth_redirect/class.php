@@ -9,7 +9,7 @@ use Bitrix\Main\Localization\Loc;
 use Ylab\Meeting\Zoom\Auth;
 
 
-class YlabMeetingEdit extends CBitrixComponent
+class YlabMeetingOauthRedirect extends CBitrixComponent
 {
     /**
      * @return bool
