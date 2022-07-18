@@ -1,2 +1,0 @@
-<?php
-$MESS['YLAB.MEETING.LIST.TABLE.PREFIX'] = 'Таблица:';

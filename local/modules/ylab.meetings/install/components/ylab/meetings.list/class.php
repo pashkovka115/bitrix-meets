@@ -12,7 +12,7 @@ use Bitrix\Main\UI\Filter\Options;
  * Класс для отображения списков
  *
  * Class MeetingsListComponent
- * @package YLab\Components
+ *
  */
 class MeetingsListComponent extends CBitrixComponent
 {
@@ -47,17 +47,16 @@ class MeetingsListComponent extends CBitrixComponent
         return $arParams;
     }
 
+
     /**
      * Метод executeComponent
      *
-     * @return mixed|void
-     * @throws Exception
+     * @return mixed|void|null
+     * @throws \Bitrix\Main\LoaderException
      */
     public function executeComponent()
     {
-        if (CModule::IncludeModule('ylab.meetings')) {
-
-            Loader::IncludeModule('ylab.meetings');
+        if (Loader::IncludeModule('ylab.meetings')) {
 
             if ($this->templateName == 'grid') {
                 $this->showByGrid();
@@ -73,6 +72,7 @@ class MeetingsListComponent extends CBitrixComponent
         }
 
     }
+
 
     /**
      * Отображение через дефолтный шаблон
@@ -98,6 +98,7 @@ class MeetingsListComponent extends CBitrixComponent
         $this->arResult['RECORD_COUNT'] = $this->getGridNav()->getRecordCount();
 
     }
+
 
     /**
      * Возвращает содержимое (тело) таблицы.
@@ -138,16 +139,18 @@ class MeetingsListComponent extends CBitrixComponent
         return $arBody;
     }
 
+
     /**
      * Получение элементов через ORM для шаблона .default
      *
      * @return array
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Bitrix\Main\ObjectPropertyException
+     * @throws \Bitrix\Main\SystemException
      */
     public function getAllElements(): array
     {
         $result = [];
-
-        $ormNam = 'Ylab\Meetings\\' . $this->ormClaccName;
 
         $query = new ORM\Query\Query('Ylab\Meetings\\' . $this->ormClaccName);
 
@@ -159,6 +162,7 @@ class MeetingsListComponent extends CBitrixComponent
         return $elements->fetchAll();
 
     }
+
 
     /**
      * Получение элементов через ORM для шаблона grid
@@ -191,6 +195,7 @@ class MeetingsListComponent extends CBitrixComponent
 
     }
 
+
     /**
      * Возвращает идентификатор грида.
      *
@@ -204,7 +209,6 @@ class MeetingsListComponent extends CBitrixComponent
     /**
      * Возращает заголовки таблицы.
      *
-     * @param array $columnFields
      * @return array
      */
     private function getGridHead(): array
@@ -232,8 +236,6 @@ class MeetingsListComponent extends CBitrixComponent
         // Массив заголовков для грида
         $gridHead = [];
 
-        // Для каждого поля ORM класса проверяем присутствие его в параметрах нашего компонента
-        // и в положительном случае записываем его в $gridHead
         foreach ($mapObjects as $mapObject) {
 
             $arr = [];
@@ -254,8 +256,7 @@ class MeetingsListComponent extends CBitrixComponent
                 $ormRefClaccNamePieses = explode("\\", $mapObject->getDataType());
                 $ormRefClaccName = strtoupper($ormRefClaccNamePieses[3]);
 
-                // Пробегаем по массиву с референсными элементами
-                // и вытягиваем из рефернсной ORM необходимый 'title'
+                // вытягиваем из рефернсной ORM необходимый 'name' и 'title'
                 foreach ($arrRefElements as $key => $value) {
 
                     $pieces = explode(".", $value);
@@ -294,6 +295,7 @@ class MeetingsListComponent extends CBitrixComponent
         return $gridHead;
     }
 
+
     /**
      * Возвращает тип поля для фильтрации.
      *
@@ -313,6 +315,7 @@ class MeetingsListComponent extends CBitrixComponent
 
         return $gridFilterDataType;
     }
+
 
     /**
      * Возвращает настройки отображения грид фильтра.
@@ -342,6 +345,7 @@ class MeetingsListComponent extends CBitrixComponent
         return $getGridFilterParams;
     }
 
+
     /**
      * Возвращает единственный экземпляр настроек грида.
      *
@@ -350,7 +354,9 @@ class MeetingsListComponent extends CBitrixComponent
     private function getObGridParams(): GridOptions
     {
         return $this->gridOption ?? $this->gridOption = new GridOptions($this->getGridId());
+
     }
+
 
     /**
      * Параметры навигации грида
@@ -367,6 +373,7 @@ class MeetingsListComponent extends CBitrixComponent
 
         return $this->gridNav;
     }
+
 
     /**
      * Возвращает значения грид фильтра.
@@ -385,6 +392,7 @@ class MeetingsListComponent extends CBitrixComponent
           $formatedFilter
         );
     }
+
 
     /**
      * Подготавливает параметры фильтра
@@ -429,6 +437,5 @@ class MeetingsListComponent extends CBitrixComponent
 
         return $arFilter;
     }
-
 
 }

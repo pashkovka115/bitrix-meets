@@ -37,6 +37,7 @@
         ['NAME' => '100', 'VALUE' => '100']
       ],
       'AJAX_OPTION_JUMP' => 'N',
+      "AJAX_OPTION_STYLE" => "Y",
       'SHOW_CHECK_ALL_CHECKBOXES' => false,
       'SHOW_ROW_ACTIONS_MENU' => true,
       'SHOW_GRID_SETTINGS_MENU' => true,
@@ -52,9 +53,13 @@
       'ALLOW_SORT' => true,
       'ALLOW_PIN_HEADER' => true,
       'AJAX_OPTION_HISTORY' => 'N',
+      "AJAX_OPTION_ADDITIONAL" => $arResult['GRID_ID'],
       'TOTAL_ROWS_COUNT' => $arResult['RECORD_COUNT'],
-    ]);
-
+    ],
+      $component
+    );
     ?>
 </div>
+
+
 
