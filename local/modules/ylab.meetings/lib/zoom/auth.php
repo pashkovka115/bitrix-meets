@@ -8,13 +8,14 @@ use GuzzleHttp\Client;
 class Auth
 {
     protected Settings $settings;
-    protected $baseUri = 'https://zoom.us';
     protected $moduleId = 'ylab.meetings';
     /**
      * @var string
      * Нужен только для идентификации в БД Битрикса
      */
     private $tokenName = 'zoom.token';
+
+    const BASE_URL = 'https://zoom.us';
 
 
     public function __construct()
@@ -55,7 +56,7 @@ class Auth
     public function getNewToken()
     {
         try {
-            $client = new Client(['base_uri' => $this->baseUri]);
+            $client = new Client(['base_uri' => self::BASE_URL]);
 
             $response = $client->request('POST', '/oauth/token', [
                 "headers" => [

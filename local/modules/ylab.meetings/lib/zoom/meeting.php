@@ -8,7 +8,8 @@ class Meeting
 {
     protected Settings $settings;
     protected $auth;
-    protected $baseUri = 'https://api.zoom.us';
+
+    const BASE_URL = 'https://api.zoom.us';
 
 
     public function __construct()
@@ -29,7 +30,7 @@ class Meeting
      */
     public function create($meeting_name, $start_time, $password = '123456', $duration = 30)
     {
-        $client = new Client(['base_uri' => $this->baseUri]);
+        $client = new Client(['base_uri' => self::BASE_URL]);
 
         if ($this->auth->hasToken()) {
             $accessToken = $this->auth->getToken();
@@ -77,7 +78,7 @@ class Meeting
     {
         $uri = '/v2/users/me/meetings';
 
-        $client = new Client(['base_uri' => $this->baseUri]);
+        $client = new Client(['base_uri' => self::BASE_URL]);
 
         if ($this->auth->hasToken()) {
             $accessToken = $this->auth->getToken();
@@ -115,7 +116,7 @@ class Meeting
     {
         $uri = '/v2/meetings/' . $id;
 
-        $client = new Client(['base_uri' => $this->baseUri]);
+        $client = new Client(['base_uri' => self::BASE_URL]);
 
         if ($this->auth->hasToken()) {
             $accessToken = $this->auth->getToken();
@@ -156,7 +157,7 @@ class Meeting
      */
     public function delete($meeting_id)
     {
-        $client = new Client(['base_uri' => $this->baseUri]);
+        $client = new Client(['base_uri' => self::BASE_URL]);
 
         if ($this->auth->hasToken()) {
             $accessToken = $this->auth->getToken();
