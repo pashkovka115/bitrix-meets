@@ -1,6 +1,6 @@
 <?php
 
-namespace Ylab\Meeting\Zoom;
+namespace Ylab\Meetings\Zoom;
 
 use GuzzleHttp\Client;
 

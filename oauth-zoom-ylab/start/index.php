@@ -3,7 +3,7 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_be
 
 Bitrix\Main\Loader::includeModule('ylab.meetings');
 
-$settings = new \Ylab\Meeting\Zoom\Settings();
+$settings = new \Ylab\Meetings\Zoom\Settings();
 
 $url = "https://zoom.us/oauth/authorize?response_type=code&client_id=".$settings->getClientId()."&redirect_uri=".$settings->getRedirectURI();
 ?>

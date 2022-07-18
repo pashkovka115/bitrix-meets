@@ -1,6 +1,6 @@
 <?php
 
-namespace Ylab\Meeting\Zoom;
+namespace Ylab\Meetings\Zoom;
 
 use Bitrix\Main\Diag\Debug;
 use GuzzleHttp\Client;
@@ -33,7 +33,6 @@ class Auth
         $this->deleteToken();
         $token = $this->getNewToken();
         if ($token) {
-            echo 'перед сохранением';
             $this->saveToken($token);
         }
 

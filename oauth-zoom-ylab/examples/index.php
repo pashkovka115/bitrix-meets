@@ -11,7 +11,7 @@ Bitrix\Main\Loader::includeModule('ylab.meetings');
 <?php
 if (isset($_GET['list'])){
 
-    $meeting = new \Ylab\Meeting\Zoom\Meeting();
+    $meeting = new \Ylab\Meetings\Zoom\Meeting();
 
     $meetings = $meeting->list();
     echo '<pre>';
