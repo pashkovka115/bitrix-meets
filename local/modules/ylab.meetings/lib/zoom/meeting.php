@@ -10,7 +10,6 @@ use GuzzleHttp\Exception\TransferException;
 
 class Meeting
 {
-    protected Settings $settings;
     protected Auth $auth;
 
     const BASE_URL = 'https://api.zoom.us';
@@ -22,7 +21,6 @@ class Meeting
 
     public function __construct()
     {
-        $this->settings = new Settings();
         $this->auth = new Auth();
     }
 
