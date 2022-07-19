@@ -2,7 +2,11 @@
 
 namespace Ylab\Meetings\Zoom;
 
+use Bitrix\Main\Localization\Loc;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\TransferException;
 
 class Meeting
 {
@@ -58,7 +62,7 @@ class Meeting
 
             $data = json_decode($response->getBody());
 
-        } catch (\Exception $e) {
+        } catch (ClientException $e) {
             // если не авторизован или токен просрочен
             if (401 == $e->getCode()) {
 
@@ -67,6 +71,10 @@ class Meeting
             } else {
                 echo $e->getMessage();
             }
+        } catch (ConnectException $ce) {
+            echo Loc::getMessage('YLAB_MEETINGS_ERROR_NETWORK') . $ce->getMessage();
+        } catch (TransferException $te) {
+            echo Loc::getMessage('YLAB_MEETINGS_ERROR_GENERAL') . $te->getMessage();
         }
 
         return $data;
@@ -94,7 +102,7 @@ class Meeting
                     "Authorization" => "Bearer $accessToken"
                 ]
             ]);
-        } catch (\Exception $e) {
+        } catch (ClientException $e) {
             if (401 == $e->getCode()) {
                 $accessToken = $this->auth->authorization();
 
@@ -106,6 +114,10 @@ class Meeting
             } else {
                 echo $e->getMessage();
             }
+        }catch (ConnectException $ce) {
+            echo Loc::getMessage('YLAB_MEETINGS_ERROR_NETWORK') . $ce->getMessage();
+        } catch (TransferException $te) {
+            echo Loc::getMessage('YLAB_MEETINGS_ERROR_GENERAL') . $te->getMessage();
         }
 
         $data = json_decode($response->getBody());
@@ -132,7 +144,7 @@ class Meeting
                     "Authorization" => "Bearer $accessToken"
                 ]
             ]);
-        } catch (\Exception $e) {
+        } catch (ClientException $e) {
             if (401 == $e->getCode()) {
                 $accessToken = $this->auth->authorization();
 
@@ -144,6 +156,10 @@ class Meeting
             } else {
                 echo $e->getMessage();
             }
+        }catch (ConnectException $ce) {
+            echo Loc::getMessage('YLAB_MEETINGS_ERROR_NETWORK') . $ce->getMessage();
+        } catch (TransferException $te) {
+            echo Loc::getMessage('YLAB_MEETINGS_ERROR_GENERAL') . $te->getMessage();
         }
 
         $data = json_decode($response->getBody());
@@ -174,7 +190,7 @@ class Meeting
                     "Authorization" => "Bearer $accessToken"
                 ]
             ]);
-        } catch (\Exception $e) {
+        } catch (ClientException $e) {
             if (401 == $e->getCode()) {
                 $accessToken = $this->auth->authorization();
 
@@ -186,6 +202,10 @@ class Meeting
             } else {
                 echo $e->getMessage();
             }
+        }catch (ConnectException $ce) {
+            echo Loc::getMessage('YLAB_MEETINGS_ERROR_NETWORK') . $ce->getMessage();
+        } catch (TransferException $te) {
+            echo Loc::getMessage('YLAB_MEETINGS_ERROR_GENERAL') . $te->getMessage();
         }
 
         if (204 == $response->getStatusCode()) {
