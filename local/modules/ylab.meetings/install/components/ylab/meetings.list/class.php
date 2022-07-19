@@ -5,7 +5,7 @@ use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\UI\PageNavigation;
 use Bitrix\Main\Loader;
 use Bitrix\Main\ORM;
-use Bitrix\Main\UI\Filter\Options;
+use Bitrix\Main\UI\Filter\Options as FilterOptions;
 
 
 /**
@@ -17,77 +17,94 @@ use Bitrix\Main\UI\Filter\Options;
 class MeetingsListComponent extends CBitrixComponent
 {
 
-    /** @var string $templateName Имя шаблона компонента */
+    /** @var string/null $templateName Имя шаблона компонента */
     private $templateName;
-    /** @var string $list_id Имя отображаемого списка */
-    private $list_id;
-    /** @var string $ormClaccName Имя класса ORM */
-    private $ormClaccName;
+    /** @var string $listId Имя отображаемого списка */
+    private string $listId;
+    /** @var string $ormClassName Имя класса ORM */
+    private string $ormClassName;
     /** @var array $columnFields Набор полей колонок грида */
-    private $columnFields;
+    private array $columnFields;
     /** @var array $filterFields Набор полей доступных для фильтрации */
-    private $filterFields;
-
-
-    /**
-     * Подготовка параметров компонента
-     *
-     * @param $arParams
-     * @return array
-     */
-    public function onPrepareComponentParams($arParams): array
-    {
-
-        $this->templateName = $this->GetTemplateName();
-        $this->list_id = $arParams['LIST_ID'];
-        $this->ormClaccName = $arParams['ORM_NAME'];
-        $this->columnFields = $arParams['COLUMN_FIELDS'];
-        $this->filterFields = $arParams['FILTER_FIELDS'];
-
-        return $arParams;
-    }
+    private array $filterFields;
+    /** @var ?PageNavigation $gridNav Параметры навигации грида */
+    private ?PageNavigation $gridNav = null;
 
 
     /**
      * Метод executeComponent
      *
      * @return mixed|void|null
+     * @throws \Bitrix\Main\ArgumentException
      * @throws \Bitrix\Main\LoaderException
+     * @throws \Bitrix\Main\ObjectPropertyException
+     * @throws \Bitrix\Main\SystemException
      */
     public function executeComponent()
     {
+
+        $this->templateName = $this->GetTemplateName();
+
         if (Loader::IncludeModule('ylab.meetings')) {
 
-            if ($this->templateName == 'grid') {
-                $this->showByGrid();
-            } else if ($this->templateName == '' || $this->templateName == '.default') {
-                $this->showByDefault();
+            $this->arResult['IS_MODULE_LOAD'] = true;
+
+            if (is_string($this->arParams['LIST_ID'])) {
+                $this->listId = $this->arParams['LIST_ID'];
+            }
+            if (is_string($this->arParams['ORM_NAME'])) {
+                $this->ormClassName = $this->arParams['ORM_NAME'];
+            }
+            if (is_array($this->arParams['COLUMN_FIELDS'])) {
+                $this->columnFields = $this->arParams['COLUMN_FIELDS'];
+            }
+            if (is_array($this->arParams['FILTER_FIELDS'])) {
+                $this->filterFields = $this->arParams['FILTER_FIELDS'];
             }
 
-            $this->includeComponentTemplate();
-        } else {
+            if ($this->templateName == 'grid') {
+                if (is_set($this->ormClassName) && !empty($this->columnFields)) {
 
-            echo Loc::getMessage('YLAB.MEETING.LIST.CLASS.MESSAGE');
-            echo '<br>';
+                    $this->showByGrid();
+                }
+            } else if ($this->templateName == '' || $this->templateName == '.default') {
+
+                if (is_set($this->ormClassName) && !empty($this->columnFields)) {
+
+                    $this->arResult['GRID'] = $this->getGridData();
+                }
+            }
         }
 
+        $this->includeComponentTemplate();
     }
 
 
     /**
-     * Отображение через дефолтный шаблон
+     * Массив для дефолтного шаблона
+     *
+     * @return array
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Bitrix\Main\ObjectPropertyException
+     * @throws \Bitrix\Main\SystemException
      */
-    public function showByDefault()
+    public function getGridData(): array
     {
-        $this->arResult['ITEMS'] = $this->getAllElements();
-        $this->arResult['GRID_HEAD'] = $this->getGridHead();
-        $this->arResult['TABLE_NAME'] = $this->list_id;
+        $arr['GRID'] = [];
+
+        $arr['GRID']['ITEMS'] = $this->getAllElements();
+        $arr['GRID']['GRID_HEAD'] = $this->getGridHead();
+        $arr['GRID']['TABLE_NAME'] = $this->listId;
+
+
+        return $arr['GRID'];
     }
+
 
     /**
      * Отображение через грид
      */
-    public function showByGrid()
+    public function showByGrid(): void
     {
 
         $this->arResult['GRID_ID'] = $this->getGridId();
@@ -125,11 +142,11 @@ class MeetingsListComponent extends CBitrixComponent
 
             $arGridElement['actions'] = [
               [
-                'text' => Loc::getMessage('YLAB.MEETING.LIST.CLASS.DELETE'),
+                'text' => Loc::getMessage('YLAB_MEETING_LIST_CLASS_DELETE'),
                 'onclick' => 'document.location.href="/' . $arItem['ID'] . '/delete/"'
               ],
               [
-                'text' => Loc::getMessage('YLAB.MEETING.LIST.CLASS.EDIT'),
+                'text' => Loc::getMessage('YLAB_MEETING_LIST_CLASS_EDIT'),
                 'onclick' => 'document.location.href="/' . $arItem['ID'] . '/edit/"'
               ],
             ];
@@ -152,15 +169,15 @@ class MeetingsListComponent extends CBitrixComponent
     {
         $result = [];
 
-        $query = new ORM\Query\Query('Ylab\Meetings\\' . $this->ormClaccName);
+        $query = new ORM\Query\Query('Ylab\Meetings\\' . $this->ormClassName);
 
         $elements = $query
-          ->setFilter([])
           ->setSelect($this->columnFields)
           ->exec();
 
-        return $elements->fetchAll();
+        $result = $elements->fetchAll();
 
+        return $result;
     }
 
 
@@ -173,7 +190,7 @@ class MeetingsListComponent extends CBitrixComponent
     {
         $result = [];
 
-        $ormNam = 'Ylab\Meetings\\' . $this->ormClaccName;
+        $ormNam = 'Ylab\Meetings\\' . $this->ormClassName;
 
         $arCurSort = $this->getObGridParams()->getSorting(['sort' => ['ID' => 'DESC']])['sort'];
         $arFilter = $this->getGridFilterValues();
@@ -203,8 +220,9 @@ class MeetingsListComponent extends CBitrixComponent
      */
     private function getGridId(): string
     {
-        return 'ylab_meetings_' . $this->list_id;
+        return 'ylab_meetings_' . $this->listId;
     }
+
 
     /**
      * Возращает заголовки таблицы.
@@ -228,7 +246,7 @@ class MeetingsListComponent extends CBitrixComponent
         }
 
         // Получаем имя вызываемого ORM класса
-        $ormNam = 'Ylab\Meetings\\' . $this->ormClaccName;
+        $ormNam = 'Ylab\Meetings\\' . $this->ormClassName;
 
         // Читаем ORM
         $mapObjects = $ormNam::getMap();
@@ -251,7 +269,7 @@ class MeetingsListComponent extends CBitrixComponent
                 $arr['sort'] = $mapObject->getName();
 
             } // Тип поля из ORM есть в настройках и он референсный
-            else if (in_array($mapObject->getName(), $arrFieldNames) && $fieldTypes[4] == 'Relations') {
+            elseif (in_array($mapObject->getName(), $arrFieldNames) && $fieldTypes[4] == 'Relations') {
 
                 $ormRefClaccNamePieses = explode("\\", $mapObject->getDataType());
                 $ormRefClaccName = strtoupper($ormRefClaccNamePieses[3]);
@@ -367,7 +385,13 @@ class MeetingsListComponent extends CBitrixComponent
     {
         if ($this->gridNav === null) {
             $this->gridNav = new PageNavigation($this->getGridId());
-            $this->gridNav->allowAllRecords(true)->setPageSize($this->getObGridParams()->GetNavParams()['nPageSize'])
+
+            $gridOptions = $this->getObGridParams();
+            $navParams = $gridOptions->GetNavParams();
+
+            $this->gridNav
+              ->allowAllRecords(true)
+              ->setPageSize($navParams['nPageSize'])
               ->initFromUri();
         }
 
@@ -382,8 +406,9 @@ class MeetingsListComponent extends CBitrixComponent
      */
     public function getGridFilterValues(): array
     {
-        $obFilterOption = new Options($this->getGridId());
-        $arFilterData = $obFilterOption->getFilter([]);
+
+        $obFilterOption = new FilterOptions($this->getGridId());
+        $arFilterData = $obFilterOption->getFilter();
         $baseFilter = array_intersect_key($arFilterData, array_flip($obFilterOption->getUsedFields()));
         $formatedFilter = $this->prepareFilter($arFilterData, $baseFilter);
 

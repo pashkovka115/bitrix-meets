@@ -1,3 +1,3 @@
 <?php
-$MESS['YLAB.MEETING.LIST.CLASS.EDIT'] = 'Редактировать';
-$MESS['YLAB.MEETING.LIST.CLASS.DELETE'] = 'Удалить';
+$MESS['YLAB_MEETING_LIST_CLASS_EDIT'] = 'Редактировать';
+$MESS['YLAB_MEETING_LIST_CLASS_DELETE'] = 'Удалить';
