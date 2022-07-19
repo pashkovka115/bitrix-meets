@@ -6,7 +6,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
 
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
-use Ylab\Meeting\Zoom\Auth;
+use Ylab\Meetings\Zoom\Auth;
 
 
 class YlabMeetingOauthRedirect extends CBitrixComponent
