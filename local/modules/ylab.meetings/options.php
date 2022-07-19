@@ -23,9 +23,9 @@ $request = Application::getInstance()->getContext()->getRequest();
 $aTabs = [
     [
         "DIV" => "ylab_meetings_tab1",
-        "TAB" => Loc::getMessage("YLAB.MEETINGS.SETTINGS"),
+        "TAB" => Loc::getMessage("YLAB_MEETINGS_SETTINGS"),
         "ICON" => "settings",
-        "TITLE" => Loc::getMessage("YLAB.MEETINGS.TITLE"),
+        "TITLE" => Loc::getMessage("YLAB_MEETINGS_TITLE"),
     ],
 ];
 
@@ -37,7 +37,10 @@ $aTabs[] = [
 
 $arAllOptions = [
     'main' => [
-        ["user_id", Loc::getMessage("YLAB.MEETINGS.USER_ID"), '', ['text', '']]
+        ['note' => Loc::getMessage('YLAB_MEETINGS_SETTINGS_TITLE')],
+        ['client_id', Loc::getMessage('YLAB_MEETINGS_CLIENT_ID'), '', ['text', '70']],
+        ['client_secret', Loc::getMessage('YLAB_MEETINGS_SECRET_CODE'), '', ['text', '70']],
+        ['zoom_redirect_url', Loc::getMessage('YLAB_MEETINGS_URL_REDIRECT'), '', ['text', '70']],
     ],
 ];
 
