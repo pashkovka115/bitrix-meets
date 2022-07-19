@@ -3,6 +3,7 @@ CREATE TABLE `y_meetings_room`
     `ID`             int          NOT NULL AUTO_INCREMENT,
     `NAME`           varchar(255) NOT NULL,
     `ACTIVITY`       varchar(1)   NOT NULL,
+    `MEET_DATE`      datetime     NOT NULL,
     `INTEGRATION_ID` int          NOT NULL,
     PRIMARY KEY (`ID`)
 );

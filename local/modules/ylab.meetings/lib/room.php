@@ -58,6 +58,11 @@ class RoomTable extends Entity\DataManager
                 'values' => ['N', 'Y'],
                 'title' => Loc::getMessage('ROOM_ENTITY_ACTIVITY_FIELD'),
             ]),
+            //Дата и время
+            new Entity\DatetimeField('MEET_DATE', [
+                'required' => true,
+                'title' => Loc::getMessage('ROOM_ENTITY_DATETIME_FIELD'),
+            ]),
             //ID интеграции
             new Entity\IntegerField('INTEGRATION_ID', [
                 'required' => true,
