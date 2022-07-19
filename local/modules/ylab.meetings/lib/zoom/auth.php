@@ -8,8 +8,10 @@ use GuzzleHttp\Client;
 
 class Auth
 {
-    protected Settings $settings;
     protected $moduleId = 'ylab.meetings';
+    protected $clientId;
+    protected $clientSecret;
+    protected $urlRedirect;
     /**
      * @var string
      * Нужен только для идентификации в БД Битрикса
@@ -22,7 +24,9 @@ class Auth
 
     public function __construct()
     {
-        $this->settings = new Settings();
+        $this->clientId = \COption::GetOptionString($this->moduleId, 'client_id');
+        $this->clientSecret = \COption::GetOptionString($this->moduleId, 'client_secret');
+        $this->urlRedirect = \COption::GetOptionString($this->moduleId, 'zoom_redirect_url');
     }
 
 
@@ -63,13 +67,13 @@ class Auth
             $response = $client->request('POST', self::URL_NEW_TOKEN, [
                 "headers" => [
                     "Authorization" => "Basic " . base64_encode(
-                            $this->settings->getClientId() . ':' . $this->settings->getClientSecret()
+                            $this->clientId . ':' . $this->clientSecret
                         )
                 ],
                 'form_params' => [
                     "grant_type" => "authorization_code",
                     "code" => $_GET['code'],
-                    "redirect_uri" => $this->settings->getRedirectURI()
+                    "redirect_uri" => $this->urlRedirect
                 ],
             ]);
             $token = json_decode($response->getBody()->getContents(), true);
