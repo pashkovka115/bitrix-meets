@@ -37,7 +37,9 @@ $aTabs[] = [
 
 $arAllOptions = [
     'main' => [
-        ['note' => Loc::getMessage('YLAB_MEETINGS_SETTINGS_TITLE')],
+        Loc::getMessage('YLAB_MEETINGS_SETTINGS_TITLE'),
+        ['select_user', Loc::getMessage('YLAB_MEETINGS_SELECT_USER'), '', ['select_user']],
+        Loc::getMessage('YLAB_MEETINGS_SETTINGS_TITLE_ZOOM'),
         ['client_id', Loc::getMessage('YLAB_MEETINGS_CLIENT_ID'), '', ['text', '70']],
         ['client_secret', Loc::getMessage('YLAB_MEETINGS_SECRET_CODE'), '', ['text', '70']],
         ['zoom_redirect_url', Loc::getMessage('YLAB_MEETINGS_URL_REDIRECT'), '', ['text', '70']],
@@ -46,6 +48,11 @@ $arAllOptions = [
 
 if (($request->get('save') !== null || $request->get('apply') !== null) && check_bitrix_sessid()) {
     __AdmSettingsSaveOptions($module_id, $arAllOptions['main']);
+    foreach ($arAllOptions["main"] as $arAllOption) {
+        if ($arAllOption[3][0] == "select_user") {
+            COption::SetOptionString($module_id, "select_user", implode(",", $_REQUEST["select_user"]));
+        }
+    }
 }
 
 $tabControl = new CAdminTabControl("tabControl", $aTabs);
@@ -60,7 +67,39 @@ $tabControl = new CAdminTabControl("tabControl", $aTabs);
 
     $tabControl->BeginNextTab();
 
-    __AdmSettingsDrawList($module_id, $arAllOptions["main"]);
+    foreach ($arAllOptions["main"] as $arAllOption) {
+        if (isset($arAllOption[3]) && $arAllOption[3][0] == "select_user") {
+            ?>
+            <tr>
+                <td width="50%"
+                    class="adm-detail-content-cell-l"><?= Loc::getMessage('YLAB_MEETINGS_SELECT_USER') ?></td>
+                <td width="50%" class="adm-detail-content-cell-r">
+                    <?
+                    $selectedUserCodes = explode(',', COption::GetOptionString($module_id, $arAllOption[3][0]));
+                    $APPLICATION->IncludeComponent(
+                        'bitrix:main.user.selector',
+                        '',
+                        [
+                            "ID" => "select_user_selector",
+                            "LIST" => $selectedUserCodes,
+                            "LAZYLOAD" => "Y",
+                            "INPUT_NAME" => 'select_user[]',
+                            "USE_SYMBOLIC_ID" => false,
+                            "API_VERSION" => 2,
+                            "SELECTOR_OPTIONS" => [
+                            ]
+                        ]
+                    );
+                    ?>
+                </td>
+            </tr>
+            <?
+        } else {
+            __AdmSettingsDrawRow($module_id, $arAllOption);
+        }
+
+    }
+    //__AdmSettingsDrawList($module_id, $arAllOptions["main"]);
 
     $tabControl->BeginNextTab();
 
