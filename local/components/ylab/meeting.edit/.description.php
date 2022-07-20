@@ -7,8 +7,8 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
 use Bitrix\Main\Localization\Loc;
 
 $arComponentDescription = [
-    "NAME" => Loc::getMessage('YLAB_MEETING_EDIT_EDIT_MEETING'),
-    "DESCRIPTION" => Loc::getMessage('YLAB_MEETING_EDIT_COMPONENT_FROM'),
+    "NAME" => Loc::getMessage('YLAB.MEETING.EDIT.EDIT.MEETING'),
+    "DESCRIPTION" => Loc::getMessage('YLAB.MEETING.EDIT.COMPONENT.FROM'),
     "COMPLEX" => "N",
     "PATH" => [
         "ID" => 'ylab_local',
