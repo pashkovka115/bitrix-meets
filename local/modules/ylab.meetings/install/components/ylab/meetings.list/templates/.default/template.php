@@ -15,7 +15,7 @@ use Bitrix\Main\Localization\Loc;
 
 <? else: ?>
 
-    <? if (!is_set($arParams['ORM_NAME'])) : ?>
+    <? if (empty($arParams['ORM_NAME'])) : ?>
         <?= Loc::getMessage('YLAB_MEETING_LIST_TABLE_DEFAULT_TEMPLATE_ERROR2') ?>
         <?= '<br>' ?>
     <? endif; ?>
@@ -28,7 +28,7 @@ use Bitrix\Main\Localization\Loc;
         <?= '<br>' ?>
     <? endif; ?>
 
-    <? if (is_set($arParams['ORM_NAME']) && is_array($arParams['COLUMN_FIELDS'])
+    <? if (!empty($arParams['ORM_NAME']) && is_array($arParams['COLUMN_FIELDS'])
       && !empty($arParams['COLUMN_FIELDS'])) : ?>
         <div class="">
 

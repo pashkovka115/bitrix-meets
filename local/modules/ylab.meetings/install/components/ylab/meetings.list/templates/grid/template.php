@@ -13,7 +13,7 @@ use Bitrix\Main\Localization\Loc;
 
 <?php else: ?>
 
-    <?php if (!is_set($arParams['ORM_NAME'])) : ?>
+    <?php if (empty($arParams['ORM_NAME'])) : ?>
         <?= Loc::getMessage('YLAB_MEETING_LIST_TABLE_GRID_TEMPLATE_ERROR2') ?>
         <?= '<br>' ?>
     <?php endif; ?>
@@ -25,11 +25,17 @@ use Bitrix\Main\Localization\Loc;
         <?= Loc::getMessage('YLAB_MEETING_LIST_TABLE_GRID_TEMPLATE_ERROR4') ?>
         <?= '<br>' ?>
     <?php endif; ?>
+    <?php if (empty($arParams['LIST_ID'])) : ?>
+        <?= Loc::getMessage('YLAB_MEETING_LIST_TABLE_GRID_TEMPLATE_ERROR5') ?>
+        <?= '<br>' ?>
+    <?php endif; ?>
 
-    <?php if (is_set($arParams['ORM_NAME']) && is_array($arParams['COLUMN_FIELDS'])
-      && !empty($arParams['COLUMN_FIELDS'])) : ?>
+    <?php if (!empty($arParams['ORM_NAME']) && is_array($arParams['COLUMN_FIELDS'])
+      && !empty($arParams['LIST_ID']) && !empty($arParams['COLUMN_FIELDS'])) : ?>
 
         <div class="">
+
+        <?php if (!empty($arParams['FILTER_FIELDS'])) : ?>
 
             <?php $APPLICATION->includeComponent(
               'bitrix:main.ui.filter',
@@ -46,6 +52,7 @@ use Bitrix\Main\Localization\Loc;
             );
 
             ?>
+        <?php endif; ?>
 
             <?php
             $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', [
