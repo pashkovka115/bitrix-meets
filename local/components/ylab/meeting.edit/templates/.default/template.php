@@ -20,6 +20,15 @@ use Bitrix\Main\Localization\Loc;
 /** @var \CBitrixComponent $component */
 $this->setFrameMode(true);
 
+if (hasMessages()) {
+    ?>
+  <ul class="ylab-messages"><?php
+    foreach (getMessages() as $message) {
+        ?>
+      <li class="<?= $message['type'] ?>"><?= $message['message'] ?></li><?php
+    }
+    ?></ul><?php
+}
 ?>
 <form method="post" action="<?= POST_FORM_ACTION_URI ?>">
     <?= bitrix_sessid_post() ?>

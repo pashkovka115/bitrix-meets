@@ -46,6 +46,8 @@ class YlabMeetingEdit extends CBitrixComponent
      */
     public function onPrepareComponentParams($params)
     {
+        $this->arResult['ERRORS'] = [];
+
         if (is_null($params['ELEMENT_ID'])) {
             $this->arParams['ELEMENT_ID'] = false;
         } else {
@@ -100,11 +102,17 @@ class YlabMeetingEdit extends CBitrixComponent
 
                 LocalRedirect($this->app()->GetCurPageParam('ELEMENT_ID=' . $params['ID']));
             } else {
-                RoomTable::add([
+                $room = RoomTable::add([
                     'NAME' => htmlspecialcharsbx($params['NAME']),
                     'ACTIVITY' => isset($params['ACTIVITY']) ? 'Y' : 'N',
                     'INTEGRATION_ID' => $params['INTEGRATION_ID'] * 1
                 ]);
+
+                if ($room->isSuccess()){
+                    setMessage("Сохранено", 'success');
+                }else{
+                    setMessage("Во время добавления произошла ошибка");
+                }
             }
         }
 
