@@ -1,3 +1,3 @@
 <?
-$MESS['YLAB.MEETING.EDIT.OUTPUT.VARS'] = 'Входные переменные';
-$MESS['YLAB.MEETING.EDIT.ID.MEETING'] = 'ID переговорной';
+$MESS['YLAB_MEETING_EDIT_OUTPUT_VARS'] = 'Входные переменные';
+$MESS['YLAB_MEETING_EDIT_ID_MEETING'] = 'ID переговорной';
