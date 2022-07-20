@@ -1,5 +1,13 @@
 {
+    "extra": {
+        "installer-paths": {
+            "../modules/{$name}/": [
+                "type:bitrix-module"
+            ]
+        }
+    },
     "require": {
-        "guzzlehttp/guzzle": "^7.4"
+        "guzzlehttp/guzzle": "^7.4",
+        "andreyryabin/sprint.migration": "^4.1"
     }
 }
