@@ -63,6 +63,18 @@ class IntegrationsEditComponent extends CBitrixComponent
 
         $this->templateName = $this->GetTemplateName();
 
+        $context = Application::getInstance()->getContext();
+        $request = $context->getRequest();
+        AddMessage2Log($this->arParams);
+        if ($this->arParams['action']) {
+            AddMessage2Log('!!!!!!!!!!!!');
+        }
+        if ($this->arParams['add']) {
+        }
+        if ($this->arParams['delete']) {
+        }
+
+
         if (Loader::IncludeModule('ylab.meetings')) {
             $this->showByGrid();
         }
@@ -85,11 +97,13 @@ class IntegrationsEditComponent extends CBitrixComponent
         $this->arResult['RECORD_COUNT'] = $this->getGridNav()->getRecordCount();
         $this->arResult['BUTTONS']['ADD'] = $this->getAddButton();
         $this->arResult['BUTTONS']['ACTION'] = $this->getActionPanelButtons();
+
+        $this->arResult['AJAX_PATH'] = $this->getAjaxActionAdd();
     }
 
 
     /**
-     * Возвращает строки грида
+     * Возвращает содержимое (тело) таблицы.
      *
      * @return array
      */
@@ -171,7 +185,7 @@ class IntegrationsEditComponent extends CBitrixComponent
 
 
     /**
-     * Возращает шапку
+     * Возращает заголовки таблицы.
      *
      * @return array
      */
@@ -329,7 +343,8 @@ class IntegrationsEditComponent extends CBitrixComponent
     {
         \Bitrix\Main\UI\Extension::load("ui.buttons.icons");
         $addButton = new Bitrix\UI\Buttons\CreateButton();
-        $addButton->addAttribute('type = "submit"');
+        $addButton->addAttribute('type', 'submit');
+        //$addButton->addAttribute('id','addintegration');
         $addButton->addClass('ui-btn-icon-add');
         $addButton->setText(Loc::getMessage('BUTTON_ADD_INTEGRATION'));
         $addButton->setStyles(['float' => 'right']);
@@ -349,5 +364,10 @@ class IntegrationsEditComponent extends CBitrixComponent
         $editButton = $snippets->getEditButton();
 
         return ['EDIT' => $editButton, 'REMOVE' => $removeButton];
+    }
+
+    public function getAjaxActionAdd(): string
+    {
+        return $this->getPath() . '/ajax.php';
     }
 }

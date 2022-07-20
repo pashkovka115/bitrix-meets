@@ -28,8 +28,8 @@ use Bitrix\Main\Localization\Loc;
     </div>
     <div style="clear: both;"></div>
     <div class="">
-        <form action="/ajax.php" method="POST">
-            <input type="hidden" name="step" value="addintegrationform">
+        <form action="<?= $arResult['AJAX_PATH'] ?>" method="POST">
+            <input type="hidden" id="addButton" name="action" value="add">
             <?= $arResult['BUTTONS']['ADD'] ?>
         </form>
         <div>
@@ -89,3 +89,16 @@ use Bitrix\Main\Localization\Loc;
         </div>
     </div>
 </div>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+    /*
+    jQuery("#addintegration").on('click', function () {
+        var request = BX.ajax.runComponentAction('ylab:integrations.edit', 'action', {
+            mode: 'ajax',
+            method: 'POST',
+            data: {
+                action: 'addintegration'
+            }
+        })
+    })*/
+</script>
