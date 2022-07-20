@@ -44,42 +44,5 @@ $arComponentParameters = array(
 );
 ?>
 
-<? //
-//$arComponentParameters = [
-//  'GROUPS' => [
-//    'COLUMN_FIELDS_PARAM' => [
-//      'NAME' => 'Столбцы таблицы',
-//      "SORT" => 100
-//    ],
-//  ],
-//  'PARAMETERS' => [
-//    'LIST_ID' => array(
-//      "PARENT" => "BASE",
-//      "NAME" => "Имя списка",
-//      "TYPE" => "STRING",
-//      "DEFAULT" => 'rooms_list'
-//    ),
-//    'ORM_NAME' => array(
-//      "PARENT" => "BASE",
-//      "NAME" => "Класс ORM",
-//      "TYPE" => "STRING",
-//      "DEFAULT" => 'RoomTable'
-//    ),
-//    "COLUMN_FIELDS"   =>  array(
-//      "PARENT"    =>  "BASE",
-//      "NAME"      =>  "Столбцы таблицы",
-//      "TYPE"      =>  "STRING",
-//      "DEFAULT"    =>  array(
-//        '1' => "ID",
-//        '2' => "NAME",
-//        '3' => "ACTIVITY",
-//        'INTEGRATION_ID_ALIAS' => 'INTEGRATION.NAME',
-//      ),
-//      "MULTIPLE"  =>  "Y",
-//    )
-//  ]
-//];
-//?>
-
 
 
