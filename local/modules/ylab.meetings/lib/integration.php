@@ -20,7 +20,6 @@ class IntegrationTable extends Entity\DataManager
     {
         return 'y_meetings_integration';
     }
-
     /**
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Bitrix\Main\SystemException
@@ -36,7 +35,7 @@ class IntegrationTable extends Entity\DataManager
                 'validation' => function () {
                     return [
                         //Регулярное выражение для проверки - только цифры
-                        new Entity\Validator\RegExp('[0-9]+')
+                        new Entity\Validator\RegExp('/[0-9]+/')
                     ];
                 },
             ]),
@@ -46,9 +45,16 @@ class IntegrationTable extends Entity\DataManager
                 'title' => Loc::getMessage('INTEGRATION_ENTITY_NAME_FIELD'),
                 'validation' => function () {
                     return [
-                        //Регулярное выражение для проверки латиницы и цифр и пробелов
-                        //и начало строки только с букв
-                        new Entity\Validator\RegExp('(^[a-zA-Z0-9 ]+$)'),
+                        // Уникальность названия
+                        new Entity\Validator\Unique(),
+                        //Проверка на минимальную и максимальную длину строки
+                        new Entity\Validator\Length(3, 15),
+                        //Регулярное выражение для проверки
+                        // ^[a-zA-Z\p{Cyrillic}] - первый символ  с буквы (кириллицы/латиницы)
+                        // [a-zA-Z\p{Cyrillic}0-9\s\-] - остальные символы могут быть буквами и цифрами и символ '-'
+                        // /s - пробел
+                        // /u - для обозначения того что внутри фигурных скобок Cyrillic это набор юникод-символов
+                        new Entity\Validator\RegExp('/^[a-zA-Z\p{Cyrillic}][a-zA-Z\p{Cyrillic}0-9\s\-]/u'),
                     ];
                 },
             ]),
@@ -64,8 +70,9 @@ class IntegrationTable extends Entity\DataManager
                 'title' => Loc::getMessage('INTEGRATION_ENTITY_INTEGRATION_REF_FIELD'),
                 'validation' => function () {
                     return [
-                        //Регулярное выражение для проверки пути
-                        new Entity\Validator\RegExp('(^(.+)(\\\\|\/)([^\/]+)$)')
+                        // Регулярное выражение для проверки пути
+                        // Путь должен быть вида Ylab\\Integrations\\Zoom
+                        new Entity\Validator\RegExp('/^(.+)\\\\(.+)$/')
                     ];
                 },
             ]),
@@ -77,6 +84,10 @@ class IntegrationTable extends Entity\DataManager
                     return [
                         //Проверка на минимальную и максимальную длину строки
                         new Entity\Validator\Length(4, 15),
+                        // Регулярное выражение для проверки
+                        // ^[a-zA-Z] - первый символ только буква (латинская)
+                        // Остальные - латинские буквы и символы '_' и '.'
+                        new Entity\Validator\RegExp('/^[a-zA-Z][a-zA-Z0-9-_\.]/')
                     ];
                 },
             ]),
