@@ -10,6 +10,7 @@ use Bitrix\Main\UI\PageNavigation;
 use Bitrix\Main\Loader;
 use Bitrix\Main\ORM;
 use Bitrix\Main\UI\Filter\Options as FilterOptions;
+use Ylab\Meetings\IntegrationTable;
 
 /**
  * Class Component for edit and add integrations
@@ -66,6 +67,17 @@ class IntegrationsListComponent extends CBitrixComponent
                 $this->setTemplateName('edit');
                 $this->includeComponentTemplate('addintegrationform');
                 return;
+            }
+            if ($action['NAME'] == 'submitadd') {
+                $addResult = $this->addIntegration($action['FIELDS']);
+                if (!$addResult->isSuccess()) {
+                    $this->arResult['SUBMIT_ERROR'] = $addResult->getErrorMessages();
+                    $this->setTemplateName('edit');
+                    $this->includeComponentTemplate('addintegrationform');
+                    return;
+                } else {
+                    $this->arResult['ADD_SUCCESS_INTEGRATION_NAME'] = $addResult->getData()['NAME'];
+                }
             }
 
             $this->showByGrid();
@@ -366,5 +378,22 @@ class IntegrationsListComponent extends CBitrixComponent
     public function getAjaxActionAdd(): string
     {
         return $this->getPath() . '/ajax.php';
+    }
+
+    /**
+     * @param array $fields
+     * @return \Bitrix\Main\ORM\Data\AddResult
+     * @throws Exception
+     */
+    private function addIntegration(array $fields): \Bitrix\Main\ORM\Data\AddResult
+    {
+
+        return IntegrationTable::add(array(
+            'NAME' => $fields['NAME'],
+            'ACTIVITY' => $fields['ACTIVITY'],
+            'INTEGRATION_REF' => $fields['INTEGRATION_REF'],
+            'LOGIN' => $fields['LOGIN'],
+            'PASSWORD' => $fields['PASSWORD']
+        ));
     }
 }

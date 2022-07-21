@@ -8,7 +8,21 @@ $request = Bitrix\Main\Application::getInstance()->getContext()->getRequest();
 if (!check_bitrix_sessid() || !$request->isPost())
     return;
 
-$action = $request->getPost('action');
+if ($request->getPost('action')) {
+    $action = $request->getPost('action');
+}
+if ($request->getPost('action')) {
+    $action = $request->getPost('action');
+    $fields = [
+        'NAME' => $request->getPost('NAME'),
+        'ACTIVITY' => $request->getPost('ACTIVITY') === 'Y',
+        'INTEGRATION_REF' => $request->getPost('INTEGRATION_REF'),
+        'LOGIN' => $request->getPost('LOGIN'),
+        'PASSWORD' => $request->getPost('PASSWORD'),
+    ];
+}
+
+
 require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin.php';
 global $APPLICATION;
 $APPLICATION->IncludeComponent(
@@ -17,6 +31,7 @@ $APPLICATION->IncludeComponent(
     [
         'ACTION' => [
             'NAME' => $action,
+            'FIELDS' => $fields,
         ],
         'LIST_ID' => 'integrations_list',
         'ORM_NAME' => 'IntegrationTable',
