@@ -17,7 +17,7 @@ use Bitrix\Main\UI\Filter\Options as FilterOptions;
  * @package ylab
  * @subpackage meetings
  */
-class MeetingsIntegrationsListComponent extends CBitrixComponent
+class IntegrationsListComponent extends CBitrixComponent
 {
 
     /** @var string/null $templateName Имя шаблона компонента */
