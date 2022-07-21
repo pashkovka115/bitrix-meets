@@ -8,20 +8,29 @@ $request = Bitrix\Main\Application::getInstance()->getContext()->getRequest();
 if (!check_bitrix_sessid() || !$request->isPost())
     return;
 
-if ($request->getPost('action')) {
-    $action = $request->getPost('action');
-}
-if ($request->getPost('action')) {
-    $action = $request->getPost('action');
-    $fields = [
+$action = $request->getPost('action');
+$fields = $action == 'submitadd' ?
+    [
         'NAME' => $request->getPost('NAME'),
         'ACTIVITY' => $request->getPost('ACTIVITY') === 'Y',
         'INTEGRATION_REF' => $request->getPost('INTEGRATION_REF'),
         'LOGIN' => $request->getPost('LOGIN'),
         'PASSWORD' => $request->getPost('PASSWORD'),
-    ];
-}
+    ]
+    : null;
 
+$id = $action == 'edit_burger' ? $request->getPost('id') : null;
+
+$fields = $action == 'submitedit' ? [
+    $request->getPost('ID') =>
+        [
+            'NAME' => $request->getPost('NAME'),
+            'ACTIVITY' => $request->getPost('ACTIVITY') === 'Y',
+            'INTEGRATION_REF' => $request->getPost('INTEGRATION_REF'),
+            'LOGIN' => $request->getPost('LOGIN'),
+            'PASSWORD' => $request->getPost('PASSWORD'),
+        ]
+] : null;
 
 require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin.php';
 global $APPLICATION;
@@ -32,6 +41,7 @@ $APPLICATION->IncludeComponent(
         'ACTION' => [
             'NAME' => $action,
             'FIELDS' => $fields,
+            'ID' => $id,
         ],
         'LIST_ID' => 'integrations_list',
         'ORM_NAME' => 'IntegrationTable',

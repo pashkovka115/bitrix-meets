@@ -26,7 +26,8 @@ foreach ($res->fetchAll() as $row) {
 AddMessage2Log($fields);
 ?>
 <form action="" method="POST">
-    <input type="hidden" name="step" value="editintegration">
+    <input type="hidden" name="action" value="submitedit">
+    <?= bitrix_sessid_post() ?>
 
     <input type="hidden" name="ID" value=<?= $fields['ID'] ?>>
 

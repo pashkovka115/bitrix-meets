@@ -79,6 +79,23 @@ class IntegrationsListComponent extends CBitrixComponent
                     $this->arResult['ADD_SUCCESS_INTEGRATION_NAME'] = $addResult->getData()['NAME'];
                 }
             }
+            if ($action['NAME'] == 'edit_burger') {
+                $this->arResult['ID'] = $action['ID'];
+                $this->setTemplateName('edit');
+                $this->includeComponentTemplate('editintegrationform');
+                return;
+            }
+
+            if ($action['NAME'] == 'submitedit') {
+                $editResult = $this->editIntegration($action['FIELDS']);
+                if (!$editResult->isSuccess()) {
+                    $this->arResult['SUBMIT_ERROR'] = $editResult->getErrorMessages();
+                    $this->setTemplateName('edit');
+                    $this->arResult['ID'] = key($action['FIELDS']);
+                    $this->includeComponentTemplate('editintegrationform');
+                    return;
+                }
+            }
 
             $this->showByGrid();
             $this->includeComponentTemplate();
@@ -137,7 +154,15 @@ class IntegrationsListComponent extends CBitrixComponent
                 [
                     'text' => Loc::getMessage('YLAB_MEETING_LIST_CLASS_EDIT'),
                     // TODO: необходимо реализовать отправку в ajax.php
-                    'onclick' => 'document.location.href="/' . $arItem['ID'] . '/edit/"'
+                    // 'onclick' => 'document.location.href="/' . $arItem['ID'] . '/edit/"',
+                    'onclick' => "
+                    
+                    new function (url, data) { var form = document.createElement('form');
+                    document.body.appendChild(form); form.target = '_blank'; form.method = 'post';
+                    form.action = url; for (var name in data) { var input = document.createElement('input');
+                    input.type = 'hidden'; input.name = name; input.value = data[name]; form.appendChild(input);
+                    } form.submit(); document.body.removeChild(form); }('" . $this->getAjaxActionAdd() .
+                        "', {'sessid': '" . bitrix_sessid() . "','action': 'edit_burger','id':'" . $arItem['ID'] . "'})"
                 ],
             ];
             $arRows[] = $arGridElement;
@@ -395,5 +420,20 @@ class IntegrationsListComponent extends CBitrixComponent
             'LOGIN' => $fields['LOGIN'],
             'PASSWORD' => $fields['PASSWORD']
         ));
+    }
+
+    private function editIntegration($fields)
+    {
+        /** @var Bitrix\Main\Entity\UpdateResult $result */
+        foreach ($fields as $id => $f)
+            $result = IntegrationTable::update($id, array(
+                'NAME' => $f['NAME'],
+                'ACTIVITY' => $f['ACTIVITY'],
+                'INTEGRATION_REF' => $f['INTEGRATION_REF'],
+                'LOGIN' => $f['LOGIN'],
+                'PASSWORD' => $f['PASSWORD']
+            ));
+
+        return $result;
     }
 }
