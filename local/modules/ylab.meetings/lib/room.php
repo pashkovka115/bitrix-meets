@@ -84,6 +84,19 @@ class RoomTable extends Entity\DataManager
                 IntegrationTable::class,
                 Join::on('this.INTEGRATION_ID', 'ref.ID')
             ))
+                ->configureJoinType('inner'),
+
+            //ID типа календаря
+            new Entity\IntegerField('CALENDAR_TYPE_XML_ID', [
+                'required' => true,
+                Loc::getMessage('ROOM_ENTITY_INTEGRATION_ID_FIELD'),
+            ]),
+            //JOIN на интеграцию (отношение "1:1")
+            (new Reference(
+                'CALENDARTYPE',
+                CalendarTypeTable::class,
+                Join::on('this.CALENDAR_TYPE_XML_ID', 'ref.XML_ID')
+            ))
                 ->configureJoinType('inner')
         ];
     }
