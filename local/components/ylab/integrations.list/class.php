@@ -59,10 +59,18 @@ class IntegrationsListComponent extends CBitrixComponent
      */
     public function executeComponent()
     {
-
         if (Loader::IncludeModule('ylab.meetings')) {
+
+            $action = $this->arParams['ACTION'];
+            if ($action['NAME'] == 'add') {
+                $this->setTemplateName('edit');
+                $this->includeComponentTemplate('addintegrationform');
+                return;
+            }
+
             $this->showByGrid();
             $this->includeComponentTemplate();
+
         }
     }
 
@@ -347,7 +355,6 @@ class IntegrationsListComponent extends CBitrixComponent
         $snippets = new \Bitrix\Main\Grid\Panel\Snippet();
         $removeButton = $snippets->getRemoveButton();
         $editButton = $snippets->getEditButton();
-        AddMessage2Log($removeButton);
         return ['EDIT' => $editButton, 'REMOVE' => $removeButton];
     }
 
