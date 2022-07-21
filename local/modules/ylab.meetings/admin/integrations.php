@@ -3,7 +3,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin.p
 
 global $APPLICATION;
 $APPLICATION->IncludeComponent(
-	'ylab:meetings.integrations.list',
+	'ylab:integrations.list',
 	'grid',
 	[
 		'LIST_ID' => 'integrations_list',
