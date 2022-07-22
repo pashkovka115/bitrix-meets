@@ -56,6 +56,7 @@ package-lock.json
 
 #composer venor files
 /local/composer/vendor/
+/local/composer/composer.lock
 
 !.gitignore
 !/local/
