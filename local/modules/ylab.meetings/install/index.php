@@ -58,12 +58,12 @@ class ylab_meetings extends CModule
      */
     public function DoUninstall()
     {
-        ModuleManager::unregisterModule($this->MODULE_ID);
         if (Loader::includeModule($this->MODULE_ID)) {
             $this->uninstallDB();
             $this->uninstallFiles();
             $this->uninstallEvents();
         }
+        ModuleManager::unregisterModule($this->MODULE_ID);
 
         return true;
     }
@@ -180,7 +180,14 @@ class ylab_meetings extends CModule
      */
     public function installEvents()
     {
-        EventManager::getInstance()->registerEventHandler('calendar', 'OnAfterCalendarEntryAdd', 'ylab.meetings', '\\Ylab\\Meetings\\Events', 'OnAfterCalendarEntryAdd');
+        EventManager::getInstance()
+            ->registerEventHandler(
+                'calendar',
+                'OnAfterCalendarEntryAdd',
+                'ylab.meetings',
+                '\\Ylab\\Meetings\\Events',
+                'OnAfterCalendarEntryAdd'
+            );
         return true;
 
     }
@@ -190,7 +197,14 @@ class ylab_meetings extends CModule
      */
     public function uninstallEvents()
     {
-        EventManager::getInstance()->unRegisterEventHandler('calendar', 'OnAfterCalendarEntryAdd', 'ylab.meetings', '\\Ylab\\Meetings\\Events', 'OnAfterCalendarEntryAdd');
+        EventManager::getInstance()
+            ->unRegisterEventHandler(
+                'calendar',
+                'OnAfterCalendarEntryAdd',
+                'ylab.meetings',
+                '\\Ylab\\Meetings\\Events',
+                'OnAfterCalendarEntryAdd'
+            );
         return true;
 
     }
