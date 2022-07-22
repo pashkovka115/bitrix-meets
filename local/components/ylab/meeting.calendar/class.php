@@ -19,7 +19,7 @@ class YlabMeetingCalendarComponent extends CBitrixComponent
      * Method executeComponent
      *
      * @param array $request
-     * @return bool
+     * @return array $arResult
      * @throws Exception
      */
 
@@ -28,8 +28,11 @@ class YlabMeetingCalendarComponent extends CBitrixComponent
         if (Loader::IncludeModule('ylab.meetings')) {
             $request = Context::getCurrent()->getRequest();
             $value = $request->getQuery("calendar_type");
-            if ($value == "user"){
-                return true;
+            if ($value){
+                $this->arResult["CALENDAR_TYPE"] = $value;
+            }
+            else{
+                $this->arResult["CALENDAR_TYPE"] = "user";
             }
         }
         $this->includeComponentTemplate();

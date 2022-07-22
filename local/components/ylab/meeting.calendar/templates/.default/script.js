@@ -1,10 +1,11 @@
+BX.namespace(BX.YlabMeetingCalendar)
 BX.ready(function(){
-    BX.TestObject = function(id) {
+    BX.YlabMeetingCalendar = function(id) {
         this._id = id;
     }
-    BX.TestObject.create = function(id)
+    BX.YlabMeetingCalendar.create = function(id)
     {
-        let _self = new BX.TestObject(id);
+        let _self = new BX.YlabMeetingCalendar(id);
         return _self;
     };
 });
