@@ -10,6 +10,7 @@ use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
 use Ylab\Meetings\IntegrationTable;
 use Ylab\Meetings\RoomTable;
+use Ylab\Meetings\Calendar\CalendarType;
 
 
 class YlabMeetingEdit extends CBitrixComponent
@@ -111,19 +112,16 @@ class YlabMeetingEdit extends CBitrixComponent
      */
     public function updateRoom($params)
     {
-        $XML_ID = CCalendarType::Edit(array(
-            'NEW' => false, // update
-            'arFields' => array(
-                'XML_ID' => $params['CALENDAR_TYPE_XML_ID'],
-                'NAME' => $params['CALENDAR_TYPE_NAME'],
-                'DESCRIPTION' => $params['CALENDAR_TYPE_DESCRIPTION']
-            )
-        ));
+        $xml_id = CalendarType::edit([
+            'XML_ID' => $params['CALENDAR_TYPE_XML_ID'],
+            'NAME' => $params['CALENDAR_TYPE_NAME'],
+            'DESCRIPTION' => $params['CALENDAR_TYPE_DESCRIPTION']
+        ]);
         $room = RoomTable::update($params['ID'] * 1, [
             'NAME' => htmlspecialcharsbx($params['NAME']),
             'ACTIVITY' => isset($params['ACTIVITY']) ? 'Y' : 'N',
             'INTEGRATION_ID' => $params['INTEGRATION_ID'] * 1,
-            'CALENDAR_TYPE_XML_ID' => $XML_ID
+            'CALENDAR_TYPE_XML_ID' => $xml_id
         ]);
 
         return $room;
@@ -137,19 +135,21 @@ class YlabMeetingEdit extends CBitrixComponent
      */
     public function addRoom(array $params)
     {
-        $XML_ID = CCalendarType::Edit(array(
-            'NEW' => true, // add
-            'arFields' => array(
-                'XML_ID' => $params['CALENDAR_TYPE_XML_ID'],
-                'NAME' => $params['CALENDAR_TYPE_NAME'],
-                'DESCRIPTION' => $params['CALENDAR_TYPE_DESCRIPTION']
-            )
-        ));
+        if (CalendarType::hasItem($params['CALENDAR_TYPE_XML_ID'])){
+            setMessage('Такой тип календаря уже существует');
+            LocalRedirect($this->app()->GetCurPage());
+        }
+        $xml_id = CalendarType::add([
+            'XML_ID' => $params['CALENDAR_TYPE_XML_ID'],
+            'NAME' => $params['CALENDAR_TYPE_NAME'],
+            'DESCRIPTION' => $params['CALENDAR_TYPE_DESCRIPTION']
+        ]);
+
         $room = RoomTable::add([
             'NAME' => htmlspecialcharsbx($params['NAME']),
             'ACTIVITY' => isset($params['ACTIVITY']) ? 'Y' : 'N',
             'INTEGRATION_ID' => $params['INTEGRATION_ID'] * 1,
-            'CALENDAR_TYPE_XML_ID' => $XML_ID
+            'CALENDAR_TYPE_XML_ID' => $xml_id
         ]);
 
         return $room;
@@ -167,7 +167,7 @@ class YlabMeetingEdit extends CBitrixComponent
             LocalRedirect($this->app()->GetCurPage());
         }
         RoomTable::delete($params[$this->elementId] * 1);
-        CCalendarType::Delete($params['CALENDAR_TYPE_XML_ID']);
+        CalendarType::delete($params['CALENDAR_TYPE_XML_ID']);
     }
 
 
@@ -211,8 +211,7 @@ class YlabMeetingEdit extends CBitrixComponent
         $integrations = IntegrationTable::getList();
         $this->arResult['INTEGRATIONS'] = $integrations->fetchAll();
 
-        $calendarTypes = TypeTable::getList();
-        $this->arResult['CALENDAR_TYPES'] = $calendarTypes->fetchAll();
+        $this->arResult['CALENDAR_TYPES'] = CalendarType::getAll();
 
         // если известен идентификатор достанем элемент
         if ($this->arParams[$this->elementId]) {
