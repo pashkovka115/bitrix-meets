@@ -9,19 +9,13 @@ if (!check_bitrix_sessid() || !$request->isPost())
     return;
 
 $action = $request->getPost('action');
-$fields = $action == 'submitadd' ?
-    [
-        'NAME' => $request->getPost('NAME'),
-        'ACTIVITY' => $request->getPost('ACTIVITY') === 'Y',
-        'INTEGRATION_REF' => $request->getPost('INTEGRATION_REF'),
-        'LOGIN' => $request->getPost('LOGIN'),
-        'PASSWORD' => $request->getPost('PASSWORD'),
-    ]
-    : null;
-
-$id = $action == 'edit_burger' ? $request->getPost('id') : null;
-
-$fields = $action == 'submitedit' ? [
+$fields = $action == 'submitadd' ? [
+    'NAME' => $request->getPost('NAME'),
+    'ACTIVITY' => $request->getPost('ACTIVITY') === 'Y',
+    'INTEGRATION_REF' => $request->getPost('INTEGRATION_REF'),
+    'LOGIN' => $request->getPost('LOGIN'),
+    'PASSWORD' => $request->getPost('PASSWORD'),
+] : ($action == 'submitedit' ? [
     $request->getPost('ID') =>
         [
             'NAME' => $request->getPost('NAME'),
@@ -30,7 +24,10 @@ $fields = $action == 'submitedit' ? [
             'LOGIN' => $request->getPost('LOGIN'),
             'PASSWORD' => $request->getPost('PASSWORD'),
         ]
-] : null;
+] : null);
+
+$id = $action == 'edit_burger' ? $request->getPost('id') : null;
+
 
 require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin.php';
 global $APPLICATION;
