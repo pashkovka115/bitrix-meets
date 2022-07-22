@@ -43,6 +43,7 @@ class ylab_meetings extends CModule
     {
         $this->installDB();
         $this->installFiles();
+        $this->installEvents();
 
         ModuleManager::registerModule($this->MODULE_ID);
 
@@ -56,6 +57,7 @@ class ylab_meetings extends CModule
     {
         $this->uninstallDB();
         $this->uninstallFiles();
+        $this->uninstallEvents();
 
         ModuleManager::unregisterModule($this->MODULE_ID);
 
@@ -167,5 +169,25 @@ class ylab_meetings extends CModule
         }
 
         return dirname(__DIR__);
+    }
+
+    /**
+     * @return bool
+     */
+    public function installEvents()
+    {
+        RegisterModuleDependences('calendar', 'OnAfterCalendarEntryAdd', 'ylab.meetings', '\\Ylab\\Meetings\\Events', 'OnAfterCalendarEntryAdd');
+        return true;
+
+    }
+
+    /**
+     * @return bool
+     */
+    public function uninstallEvents()
+    {
+        UnRegisterModuleDependences('calendar', 'OnAfterCalendarEntryAdd', 'ylab.meetings', '\\Ylab\\Meetings\\Events', 'OnAfterCalendarEntryAdd');
+        return true;
+
     }
 }
