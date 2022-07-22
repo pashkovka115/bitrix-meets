@@ -1,6 +1,6 @@
 <?php
 
-require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_before.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin_before.php';
 
 $request = Bitrix\Main\Application::getInstance()->getContext()->getRequest();
 
@@ -26,10 +26,11 @@ $fields = $action == 'submitadd' ? [
         ]
 ] : null);
 
-$id = $action == 'edit_burger' ? $request->getPost('id') : null;
+$id = $action == 'edit_burger' ? $request->getPost('id')
+    : ($action == 'delete_burger' ? $request->getPost('id') : null);
 
 
-require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin_after.php';
 global $APPLICATION;
 $APPLICATION->IncludeComponent(
     'ylab:integrations.list',

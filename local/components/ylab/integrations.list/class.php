@@ -97,6 +97,10 @@ class IntegrationsListComponent extends CBitrixComponent
                 }
             }
 
+            if ($action['NAME'] == 'delete_burger') {
+                $this->deleteIntegration($action['ID']);
+            }
+
             $this->showByGrid();
             $this->includeComponentTemplate();
 
@@ -119,7 +123,7 @@ class IntegrationsListComponent extends CBitrixComponent
 
         $this->arResult['BUTTONS']['ADD'] = $this->getAddButton();
         $this->arResult['BUTTONS']['ACTION'] = $this->getActionPanelButtons();
-        $this->arResult['AJAX_PATH'] = $this->getAjaxActionAdd();
+        $this->arResult['AJAX_PATH'] = $this->getAjaxPath();
     }
 
 
@@ -149,19 +153,22 @@ class IntegrationsListComponent extends CBitrixComponent
                 [
                     'text' => Loc::getMessage('YLAB_MEETING_LIST_CLASS_DELETE'),
                     // TODO: необходимо реализовать отправку в ajax.php
-                    'onclick' => 'document.location.href="/' . $arItem['ID'] . '/delete/"'
+                    'onclick' => "new function (url, data) { var form = document.createElement('form');
+                    document.body.appendChild(form); form.target = '_self'; form.method = 'post';
+                    form.action = url; for (var name in data) { var input = document.createElement('input');
+                    input.type = 'hidden'; input.name = name; input.value = data[name]; form.appendChild(input);
+                    } form.submit(); document.body.removeChild(form); }('" . $this->getAjaxPath() .
+                        "', {'sessid': '" . bitrix_sessid() . "','action': 'delete_burger','id':'" . $arItem['ID'] . "'})"
                 ],
                 [
                     'text' => Loc::getMessage('YLAB_MEETING_LIST_CLASS_EDIT'),
                     // TODO: необходимо реализовать отправку в ajax.php
                     // 'onclick' => 'document.location.href="/' . $arItem['ID'] . '/edit/"',
-                    'onclick' => "
-                    
-                    new function (url, data) { var form = document.createElement('form');
-                    document.body.appendChild(form); form.target = '_blank'; form.method = 'post';
+                    'onclick' => "new function (url, data) { var form = document.createElement('form');
+                    document.body.appendChild(form); form.target = '_self'; form.method = 'post';
                     form.action = url; for (var name in data) { var input = document.createElement('input');
                     input.type = 'hidden'; input.name = name; input.value = data[name]; form.appendChild(input);
-                    } form.submit(); document.body.removeChild(form); }('" . $this->getAjaxActionAdd() .
+                    } form.submit(); document.body.removeChild(form); }('" . $this->getAjaxPath() .
                         "', {'sessid': '" . bitrix_sessid() . "','action': 'edit_burger','id':'" . $arItem['ID'] . "'})"
                 ],
             ];
@@ -383,7 +390,7 @@ class IntegrationsListComponent extends CBitrixComponent
 
     /**
      * Метод возвращающий кнопки для панели действий грида
-     * TODO: Возможно стоит генерировать вручную чтобы привязать отправку на ajax.php
+     * TODO: использовать BX.Ajax
      *
      * @return array
      */
@@ -400,7 +407,7 @@ class IntegrationsListComponent extends CBitrixComponent
      *
      * @return string
      */
-    public function getAjaxActionAdd(): string
+    public function getAjaxPath(): string
     {
         return $this->getPath() . '/ajax.php';
     }
@@ -434,6 +441,18 @@ class IntegrationsListComponent extends CBitrixComponent
                 'PASSWORD' => $f['PASSWORD']
             ));
 
+        return $result;
+    }
+
+    private function deleteIntegration($id): \Bitrix\Main\ORM\Data\DeleteResult
+    {
+        /** @var Bitrix\Main\Entity\UpdateResult $result */
+        if (is_array($id)) {
+            foreach ($id as $item)
+                $result = IntegrationTable::delete($item);
+        } else {
+            $result = IntegrationTable::delete($id);
+        }
         return $result;
     }
 }
