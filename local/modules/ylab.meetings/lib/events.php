@@ -12,12 +12,11 @@ use Bitrix\Main\EventManager;
 class Events
 {
     /**
-     * @return bool
+     * @return void
      */
-    public static function OnAfterCalendarEntryAdd($event_id, $fields): bool
+    public static function OnAfterCalendarEntryAdd($event_id, $fields)
     {
-        AddMessage2Log($fields, "ylab.meetings");
-        return true;
+
     }
 
 }

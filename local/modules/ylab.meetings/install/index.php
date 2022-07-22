@@ -5,6 +5,8 @@ use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\IO\Directory;
 use Bitrix\Main\IO\File;
 use Bitrix\Main\ModuleManager;
+use Bitrix\Main\Loader;
+use Bitrix\Main\EventManager;
 
 /**
  * Class ylab_meetings
@@ -41,11 +43,12 @@ class ylab_meetings extends CModule
      */
     public function DoInstall()
     {
-        $this->installDB();
-        $this->installFiles();
-        $this->installEvents();
-
         ModuleManager::registerModule($this->MODULE_ID);
+        if (Loader::includeModule($this->MODULE_ID)) {
+            $this->installDB();
+            $this->installFiles();
+            $this->installEvents();
+        }
 
         return true;
     }
@@ -55,11 +58,12 @@ class ylab_meetings extends CModule
      */
     public function DoUninstall()
     {
-        $this->uninstallDB();
-        $this->uninstallFiles();
-        $this->uninstallEvents();
-
         ModuleManager::unregisterModule($this->MODULE_ID);
+        if (Loader::includeModule($this->MODULE_ID)) {
+            $this->uninstallDB();
+            $this->uninstallFiles();
+            $this->uninstallEvents();
+        }
 
         return true;
     }
@@ -176,7 +180,7 @@ class ylab_meetings extends CModule
      */
     public function installEvents()
     {
-        RegisterModuleDependences('calendar', 'OnAfterCalendarEntryAdd', 'ylab.meetings', '\\Ylab\\Meetings\\Events', 'OnAfterCalendarEntryAdd');
+        EventManager::getInstance()->registerEventHandler('calendar', 'OnAfterCalendarEntryAdd', 'ylab.meetings', '\\Ylab\\Meetings\\Events', 'OnAfterCalendarEntryAdd');
         return true;
 
     }
@@ -186,7 +190,7 @@ class ylab_meetings extends CModule
      */
     public function uninstallEvents()
     {
-        UnRegisterModuleDependences('calendar', 'OnAfterCalendarEntryAdd', 'ylab.meetings', '\\Ylab\\Meetings\\Events', 'OnAfterCalendarEntryAdd');
+        EventManager::getInstance()->unRegisterEventHandler('calendar', 'OnAfterCalendarEntryAdd', 'ylab.meetings', '\\Ylab\\Meetings\\Events', 'OnAfterCalendarEntryAdd');
         return true;
 
     }
