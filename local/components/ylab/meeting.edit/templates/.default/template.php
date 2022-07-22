@@ -30,14 +30,6 @@ if (hasMessages()) {
     ?></ul><?php
 }
 ?>
-<h4><?= Loc::getMessage('YLAB_MEETINGS_MODULE_CALENDAR_TYPES') ?></h4>
-<ul class="calendar-types">
-<?php foreach ($arResult['CALENDAR_TYPES'] as $ct){ ?>
-  <li>NAME: <?= $ct['NAME'] ?></li>
-  <li style="margin-bottom: 20px">XML_ID: <?= $ct['XML_ID'] ?></li>
-<?php } ?>
-</ul>
-<hr>
 <form method="post" action="<?= POST_FORM_ACTION_URI ?>">
     <?= bitrix_sessid_post() ?>
   <input type="hidden" name="lang" value="<?= LANG ?>">

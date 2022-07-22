@@ -4,12 +4,12 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
 
+use Bitrix\Calendar\Internals\TypeTable;
 use Bitrix\Main\Application;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
 use Ylab\Meetings\IntegrationTable;
 use Ylab\Meetings\RoomTable;
-use Ylab\Meetings\CalendarTypeTable;
 
 
 class YlabMeetingEdit extends CBitrixComponent
@@ -211,7 +211,7 @@ class YlabMeetingEdit extends CBitrixComponent
         $integrations = IntegrationTable::getList();
         $this->arResult['INTEGRATIONS'] = $integrations->fetchAll();
 
-        $calendarTypes = CalendarTypeTable::getList();
+        $calendarTypes = TypeTable::getList();
         $this->arResult['CALENDAR_TYPES'] = $calendarTypes->fetchAll();
 
         // если известен идентификатор достанем элемент
