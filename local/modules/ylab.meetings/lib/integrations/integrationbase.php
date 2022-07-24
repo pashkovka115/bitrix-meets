@@ -17,7 +17,7 @@ abstract class IntegrationBase
 
         if ($intteg){
             $class = $intteg['INTEGRATION_REF'];
-            return new $class();
+            return new $class($intteg['ID']);
         }
 
         return false;
