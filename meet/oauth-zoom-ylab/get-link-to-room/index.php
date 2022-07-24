@@ -7,7 +7,7 @@ $APPLICATION->SetTitle("Новый раздел");
 <?php
 if (isset($_GET['get-room'])){
 
-    $integration_id = 1;
+    $integration_id = 0;
 
     if ($integration_id == 0){
         throw new Exception('Необходимо передать ID интеграции в файле: ' . __FILE__);
