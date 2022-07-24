@@ -199,8 +199,6 @@ class MeetingsListComponent extends CBitrixComponent
                 }
             }
 
-            $alert = Loc::getMessage('YLAB_MEETING_LIST_CLASS_ALERT');
-
             $arGridElement['actions'] = [
               [
                 'text' => Loc::getMessage('YLAB_MEETING_LIST_CLASS_DELETE'),
