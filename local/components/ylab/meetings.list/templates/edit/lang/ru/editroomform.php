@@ -1,5 +1,5 @@
 <?php
 $MESS["YLAB_MEETING_LIST_ROOM_NAME"] = "Название комнаты: ";
 $MESS["YLAB_MEETING_LIST_ACTIVITY_NAME"] = "Активность: ";
-$MESS["YLAB_MEETING_LIST_INTEGRATION_ID_NAME"] = "ID интеграции: ";
+$MESS["YLAB_MEETING_LIST_INTEGRATION_NAME"] = "Интеграция: ";
 $MESS["YLAB_MEETING_LIST_EDIT_SUBMIT_BUTTON"] = "Редактировать";

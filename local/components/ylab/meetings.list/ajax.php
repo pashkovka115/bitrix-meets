@@ -21,8 +21,8 @@ $fields = $action == 'submitadd' ? [
     ]
 ] : null);
 
-$id = $action == 'edit_burger' ? $request->getPost('id')
-  : ($action == 'delete_burger' ? $request->getPost('id') : null);
+$id = $action == 'edit_burger' ? $request->getPost('ID')
+  : ($action == 'delete_burger' ? $request->getPost('ID') : null);
 
 
 require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin_after.php';

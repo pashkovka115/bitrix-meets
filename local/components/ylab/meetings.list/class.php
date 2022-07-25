@@ -6,6 +6,7 @@ use Bitrix\Main\UI\PageNavigation;
 use Bitrix\Main\Loader;
 use Bitrix\Main\ORM;
 use Bitrix\Main\UI\Filter\Options as FilterOptions;
+use Ylab\Meetings\IntegrationTable;
 use Ylab\Meetings\RoomTable;
 
 
@@ -52,6 +53,8 @@ class MeetingsListComponent extends CBitrixComponent
             $action = $this->arParams['ACTION'];
 
             if ($action['NAME'] == 'add_item') {
+                $integrations = IntegrationTable::getList();
+                $this->arResult['INTEGRATIONS'] = $integrations->fetchAll();
                 $this->setTemplateName('edit');
                 $this->includeComponentTemplate('addroomform');
                 return;
@@ -70,6 +73,11 @@ class MeetingsListComponent extends CBitrixComponent
 
             if ($action['NAME'] == 'edit_burger') {
                 $this->arResult['ID'] = $action['ID'];
+                if ($this->arResult['ID']) {
+                    $this->arResult['ITEM'] = RoomTable::getRowById($this->arResult['ID']);
+                }
+                $integrations = IntegrationTable::getList();
+                $this->arResult['INTEGRATIONS'] = $integrations->fetchAll();
                 $this->setTemplateName('edit');
                 $this->includeComponentTemplate('editroomform');
                 return;
@@ -208,7 +216,7 @@ class MeetingsListComponent extends CBitrixComponent
                     form.action = url; for (var name in data) { var input = document.createElement('input');
                     input.type = 'hidden'; input.name = name; input.value = data[name]; form.appendChild(input);
                     } form.submit(); document.body.removeChild(form); }('" . $this->getAjaxPath() .
-                  "', {'sessid': '" . bitrix_sessid() . "','action': 'delete_burger','id':'" . $arItem['ID'] . "'}) }"
+                  "', {'sessid': '" . bitrix_sessid() . "','action': 'delete_burger','ID':'" . $arItem['ID'] . "'}) }"
               ],
               [
                 'text' => Loc::getMessage('YLAB_MEETING_LIST_CLASS_EDIT'),
@@ -219,7 +227,7 @@ class MeetingsListComponent extends CBitrixComponent
                     form.action = url; for (var name in data) { var input = document.createElement('input');
                     input.type = 'hidden'; input.name = name; input.value = data[name]; form.appendChild(input);
                     } form.submit(); document.body.removeChild(form); }('" . $this->getAjaxPath() .
-                  "', {'sessid': '" . bitrix_sessid() . "','action': 'edit_burger','id':'" . $arItem['ID'] . "'})"
+                  "', {'sessid': '" . bitrix_sessid() . "','action': 'edit_burger','ID':'" . $arItem['ID'] . "'})"
               ],
             ];
             $arBody[] = $arGridElement;
