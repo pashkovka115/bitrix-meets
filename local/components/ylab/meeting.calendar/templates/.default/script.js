@@ -1,16 +1,31 @@
-/*
-BX.namespace(BX.YlabMeetingCalendar)
+BX.namespace("Ylab.MeetingCalendar");
+
 BX.ready(function(){
-    BX.YlabMeetingCalendar = function(id) {
-        this._id = id;
+    BX.Ylab.MeetingCalendar = function() {
+
+        if (typeof BXEventCalendar != 'undefined') {
+            var instances = BX.prop.getObject(BXEventCalendar,  'instances', null);
+
+            if (instances) {
+                this._calendar = Object.values(instances)[0];
+                this.showButtons();
+            }
+        }
     }
-    BX.YlabMeetingCalendar.create = function(id)
+    BX.Ylab.MeetingCalendar.prototype = {
+        showButtons: function (){
+            var buttonsCont = BX.prop.get(this._calendar,  'buttonsCont', null);
+            console.log(buttonsCont);
+        }
+    }
+
+    BX.Ylab.MeetingCalendar.create = function()
     {
-        let _self = new BX.YlabMeetingCalendar(id);
+        let _self = new BX.Ylab.MeetingCalendar();
         return _self;
     };
 });
-*/
+
 BX.ready(function() {
     let elementSearch = document.querySelector(".main-ui-filter-search");
     let elementSelect = BX.create({

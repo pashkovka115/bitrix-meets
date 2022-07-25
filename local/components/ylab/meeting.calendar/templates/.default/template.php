@@ -11,6 +11,6 @@
 );?>
 <script type="text/javascript">
     BX.ready(function(){
-        BX.YlabMeetingCalendar.create();
+        BX.Ylab.MeetingCalendar.create();
     })
 </script>
