@@ -1,8 +1,12 @@
-<?php if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
+<?php
+
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 } ?>
 
 <?php
+
+use Bitrix\Main\Localization\Loc;
 
 global $APPLICATION;
 ?>
@@ -26,6 +30,9 @@ global $APPLICATION;
         ?>
     </div>
     <div style="clear: both;"></div>
+    <?= $arResult['ADD_SUCCESS_INTEGRATION_NAME'] ? Loc::getMessage('YLAB_INTEGRATIONS_LIST_ADD_SUCCESS_PT_1') .
+        $arResult['ADD_SUCCESS_INTEGRATION_NAME'] . Loc::getMessage('YLAB_INTEGRATIONS_LIST_ADD_SUCCESS_PT_2')
+        : null ?>
     <div class="">
         <form action="<?= $arResult['AJAX_PATH'] ?>" method="POST">
             <input type="hidden" id="addButton" name="action" value="add">

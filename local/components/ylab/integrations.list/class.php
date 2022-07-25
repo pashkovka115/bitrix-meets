@@ -10,6 +10,7 @@ use Bitrix\Main\UI\PageNavigation;
 use Bitrix\Main\Loader;
 use Bitrix\Main\ORM;
 use Bitrix\Main\UI\Filter\Options as FilterOptions;
+use Ylab\Meetings\IntegrationTable;
 
 /**
  * Class Component for edit and add integrations
@@ -17,7 +18,7 @@ use Bitrix\Main\UI\Filter\Options as FilterOptions;
  * @package ylab
  * @subpackage meetings
  */
-class MeetingsIntegrationsListComponent extends CBitrixComponent
+class IntegrationsListComponent extends CBitrixComponent
 {
 
     /** @var string/null $templateName Имя шаблона компонента */
@@ -59,10 +60,52 @@ class MeetingsIntegrationsListComponent extends CBitrixComponent
      */
     public function executeComponent()
     {
-
         if (Loader::IncludeModule('ylab.meetings')) {
+
+            $action = $this->arParams['ACTION'];
+            if ($action['NAME'] == 'add') {
+                $this->setTemplateName('edit');
+                $this->includeComponentTemplate('addintegrationform');
+                return;
+            }
+            if ($action['NAME'] == 'submitadd') {
+                $addResult = $this->addIntegration($action['FIELDS']);
+                if (!$addResult->isSuccess()) {
+                    $this->arResult['SUBMIT_ERROR'] = $addResult->getErrorMessages();
+                    $this->setTemplateName('edit');
+                    $this->includeComponentTemplate('addintegrationform');
+                    return;
+                } else {
+                    $this->arResult['ADD_SUCCESS_INTEGRATION_NAME'] = $addResult->getData()['NAME'];
+                }
+            }
+            if ($action['NAME'] == 'edit_burger') {
+                $this->fillEditFields($action['ID']);
+                $this->setTemplateName('edit');
+                $this->includeComponentTemplate('editintegrationform');
+                return;
+            }
+
+            if ($action['NAME'] == 'submitedit') {
+                $editResult = $this->editIntegration($action['FIELDS']);
+                if (!$editResult->isSuccess()) {
+                    $this->arResult['SUBMIT_ERROR'] = $editResult->getErrorMessages();
+
+                    $this->fillEditFields(key($action['FIELDS']));
+                    $this->setTemplateName('edit');
+                    $this->arResult['ID'] = key($action['FIELDS']);
+                    $this->includeComponentTemplate('editintegrationform');
+                    return;
+                }
+            }
+
+            if ($action['NAME'] == 'delete_burger') {
+                $this->deleteIntegration($action['ID']);
+            }
+
             $this->showByGrid();
             $this->includeComponentTemplate();
+
         }
     }
 
@@ -82,7 +125,7 @@ class MeetingsIntegrationsListComponent extends CBitrixComponent
 
         $this->arResult['BUTTONS']['ADD'] = $this->getAddButton();
         $this->arResult['BUTTONS']['ACTION'] = $this->getActionPanelButtons();
-        $this->arResult['AJAX_PATH'] = $this->getAjaxActionAdd();
+        $this->arResult['AJAX_PATH'] = $this->getAjaxPath();
     }
 
 
@@ -111,13 +154,21 @@ class MeetingsIntegrationsListComponent extends CBitrixComponent
             $arGridElement['actions'] = [
                 [
                     'text' => Loc::getMessage('YLAB_MEETING_LIST_CLASS_DELETE'),
-                    // TODO: необходимо реализовать отправку в ajax.php
-                    'onclick' => 'document.location.href="/' . $arItem['ID'] . '/delete/"'
+                    'onclick' => 'BX.Ylab.Integrations.Grid.LeftPanel.create(' . CUtil::PhpToJSObject($this->getAjaxPath()) . ', ' .
+                        CUtil::PhpToJSObject([
+                            'sessid' => bitrix_sessid(),
+                            'action' => 'delete_burger',
+                            'id' => $arItem['ID'],
+                        ]) . ')'
                 ],
                 [
                     'text' => Loc::getMessage('YLAB_MEETING_LIST_CLASS_EDIT'),
-                    // TODO: необходимо реализовать отправку в ajax.php
-                    'onclick' => 'document.location.href="/' . $arItem['ID'] . '/edit/"'
+                    'onclick' => 'BX.Ylab.Integrations.Grid.LeftPanel.create(' . CUtil::PhpToJSObject($this->getAjaxPath()) . ', ' .
+                        CUtil::PhpToJSObject([
+                            'sessid' => bitrix_sessid(),
+                            'action' => 'edit_burger',
+                            'id' => $arItem['ID'],
+                        ]) . ')'
                 ],
             ];
             $arRows[] = $arGridElement;
@@ -305,10 +356,10 @@ class MeetingsIntegrationsListComponent extends CBitrixComponent
             if ($gridFilterParam['type'] == 'number') {
 
                 if (!empty($arFilterData[$gridFilterParam['id'] . '_from'])) {
-                    $arFilter['>=' . $gridFilterParam['id']] = (int)$arFilterData[$gridFilterParam['id'] . '_from'];
+                    $arFilter[' >= ' . $gridFilterParam['id']] = (int)$arFilterData[$gridFilterParam['id'] . '_from'];
                 }
                 if (!empty($arFilterData[$gridFilterParam['id'] . '_to'])) {
-                    $arFilter['<=' . $gridFilterParam['id']] = (int)$arFilterData[$gridFilterParam['id'] . '_to'];
+                    $arFilter[' <= ' . $gridFilterParam['id']] = (int)$arFilterData[$gridFilterParam['id'] . '_to'];
                 }
             }
         }
@@ -329,7 +380,7 @@ class MeetingsIntegrationsListComponent extends CBitrixComponent
         $addButton = new Bitrix\UI\Buttons\CreateButton();
         $addButton->addAttribute('type', 'submit');
         //$addButton->addAttribute('id','addintegration');
-        $addButton->addClass('ui-btn-icon-add');
+        $addButton->addClass('ui - btn - icon - add');
         $addButton->setText(Loc::getMessage('BUTTON_ADD_INTEGRATION'));
         $addButton->setStyles(['float' => 'right']);
 
@@ -338,7 +389,7 @@ class MeetingsIntegrationsListComponent extends CBitrixComponent
 
     /**
      * Метод возвращающий кнопки для панели действий грида
-     * TODO: Возможно стоит генерировать вручную чтобы привязать отправку на ajax.php
+     * TODO: использовать BX.Ajax
      *
      * @return array
      */
@@ -347,7 +398,6 @@ class MeetingsIntegrationsListComponent extends CBitrixComponent
         $snippets = new \Bitrix\Main\Grid\Panel\Snippet();
         $removeButton = $snippets->getRemoveButton();
         $editButton = $snippets->getEditButton();
-        AddMessage2Log($removeButton);
         return ['EDIT' => $editButton, 'REMOVE' => $removeButton];
     }
 
@@ -356,8 +406,69 @@ class MeetingsIntegrationsListComponent extends CBitrixComponent
      *
      * @return string
      */
-    public function getAjaxActionAdd(): string
+    public function getAjaxPath(): string
     {
         return $this->getPath() . '/ajax.php';
+    }
+
+    /**
+     * @param array $fields
+     * @return \Bitrix\Main\ORM\Data\AddResult
+     * @throws Exception
+     */
+    private function addIntegration(array $fields): \Bitrix\Main\ORM\Data\AddResult
+    {
+
+        return IntegrationTable::add(array(
+            'NAME' => $fields['NAME'],
+            'ACTIVITY' => $fields['ACTIVITY'],
+            'INTEGRATION_REF' => $fields['INTEGRATION_REF'],
+            'LOGIN' => $fields['LOGIN'],
+            'PASSWORD' => $fields['PASSWORD']
+        ));
+    }
+
+    private function editIntegration($fields)
+    {
+        /** @var Bitrix\Main\Entity\UpdateResult $result */
+        foreach ($fields as $id => $f)
+            $result = IntegrationTable::update($id, array(
+                'NAME' => $f['NAME'],
+                'ACTIVITY' => $f['ACTIVITY'],
+                'INTEGRATION_REF' => $f['INTEGRATION_REF'],
+                'LOGIN' => $f['LOGIN'],
+                'PASSWORD' => $f['PASSWORD']
+            ));
+
+        return $result;
+    }
+
+    private function deleteIntegration($id): \Bitrix\Main\ORM\Data\DeleteResult
+    {
+        /** @var Bitrix\Main\Entity\UpdateResult $result */
+        if (is_array($id)) {
+            foreach ($id as $item)
+                $result = IntegrationTable::delete($item);
+        } else {
+            $result = IntegrationTable::delete($id);
+        }
+        return $result;
+    }
+
+    private function fillEditFields($id)
+    {
+        $res = Ylab\Meetings\IntegrationTable::getList([
+            'filter' => ['ID' => $id],
+            'select' => [
+                "*",
+            ]]);
+        foreach ($res->fetchAll() as $row) {
+            $this->arResult["ID"] = $row['ID'];
+            $this->arResult["NAME"] = $row['NAME'];
+            $this->arResult["ACTIVITY"] = $row['ACTIVITY'];
+            $this->arResult["INTEGRATION_REF"] = $row['INTEGRATION_REF'];
+            $this->arResult["LOGIN"] = $row['LOGIN'];
+            $this->arResult["PASSWORD"] = $row['PASSWORD'];
+        }
     }
 }
