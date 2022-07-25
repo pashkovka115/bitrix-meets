@@ -4,7 +4,7 @@ namespace Ylab\Meetings;
 
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\EventManager;
-use Ylab\Meetings\Calendar\Event;
+use Ylab\Meetings\Calendar\CalendarEvent;
 
 /**
  * Class Events
@@ -17,7 +17,7 @@ class Events
      */
     public static function OnAfterCalendarEntryAdd($event_id, $fields)
     {
-        Event::ChangeDescriptionById($event_id);
+        CalendarEvent::ChangeDescriptionById($event_id);
     }
 
 }

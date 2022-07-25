@@ -9,7 +9,7 @@ use CCalendarEvent;
  * Class Event
  * @package    Ylab\Meetings\Calendar
  */
-class Event
+class CalendarEvent
 {
     /**
      * @return void
@@ -18,8 +18,10 @@ class Event
     {
         if (Loader::includeModule("calendar")) {
             $event = CCalendarEvent::GetById($id);
-            $event["DESCRIPTION"] = $event["NAME"];
-            CCalendarEvent::edit(array("arFields" => $event));
+            if($event["CAL_TYPE"] == "user") {
+                $event["DESCRIPTION"] = $event["NAME"];
+                CCalendarEvent::edit(array("arFields" => $event));
+            }
         }
 
     }
