@@ -154,24 +154,21 @@ class IntegrationsListComponent extends CBitrixComponent
             $arGridElement['actions'] = [
                 [
                     'text' => Loc::getMessage('YLAB_MEETING_LIST_CLASS_DELETE'),
-                    // TODO: необходимо реализовать отправку в ajax.php
-                    'onclick' => "new function (url, data) { var form = document.createElement('form');
-                    document.body.appendChild(form); form.target = '_self'; form.method = 'post';
-                    form.action = url; for (var name in data) { var input = document.createElement('input');
-                    input.type = 'hidden'; input.name = name; input.value = data[name]; form.appendChild(input);
-                    } form.submit(); document.body.removeChild(form); }('" . $this->getAjaxPath() .
-                        "', {'sessid': '" . bitrix_sessid() . "','action': 'delete_burger','id':'" . $arItem['ID'] . "'})"
+                    'onclick' => 'BX.Ylab.Integrations.Grid.LeftPanel.create(' . CUtil::PhpToJSObject($this->getAjaxPath()) . ', ' .
+                        CUtil::PhpToJSObject([
+                            'sessid' => bitrix_sessid(),
+                            'action' => 'delete_burger',
+                            'id' => $arItem['ID'],
+                        ]) . ')'
                 ],
                 [
                     'text' => Loc::getMessage('YLAB_MEETING_LIST_CLASS_EDIT'),
-                    // TODO: необходимо реализовать отправку в ajax.php
-                    // 'onclick' => 'document.location.href="/' . $arItem['ID'] . '/edit/"',
-                    'onclick' => "new function (url, data) { var form = document.createElement('form');
-                    document.body.appendChild(form); form.target = '_self'; form.method = 'post';
-                    form.action = url; for (var name in data) { var input = document.createElement('input');
-                    input.type = 'hidden'; input.name = name; input.value = data[name]; form.appendChild(input);
-                    } form.submit(); document.body.removeChild(form); }('" . $this->getAjaxPath() .
-                        "', {'sessid': '" . bitrix_sessid() . "','action': 'edit_burger','id':'" . $arItem['ID'] . "'})"
+                    'onclick' => 'BX.Ylab.Integrations.Grid.LeftPanel.create(' . CUtil::PhpToJSObject($this->getAjaxPath()) . ', ' .
+                        CUtil::PhpToJSObject([
+                            'sessid' => bitrix_sessid(),
+                            'action' => 'edit_burger',
+                            'id' => $arItem['ID'],
+                        ]) . ')'
                 ],
             ];
             $arRows[] = $arGridElement;
@@ -359,10 +356,10 @@ class IntegrationsListComponent extends CBitrixComponent
             if ($gridFilterParam['type'] == 'number') {
 
                 if (!empty($arFilterData[$gridFilterParam['id'] . '_from'])) {
-                    $arFilter['>=' . $gridFilterParam['id']] = (int)$arFilterData[$gridFilterParam['id'] . '_from'];
+                    $arFilter[' >= ' . $gridFilterParam['id']] = (int)$arFilterData[$gridFilterParam['id'] . '_from'];
                 }
                 if (!empty($arFilterData[$gridFilterParam['id'] . '_to'])) {
-                    $arFilter['<=' . $gridFilterParam['id']] = (int)$arFilterData[$gridFilterParam['id'] . '_to'];
+                    $arFilter[' <= ' . $gridFilterParam['id']] = (int)$arFilterData[$gridFilterParam['id'] . '_to'];
                 }
             }
         }
@@ -383,7 +380,7 @@ class IntegrationsListComponent extends CBitrixComponent
         $addButton = new Bitrix\UI\Buttons\CreateButton();
         $addButton->addAttribute('type', 'submit');
         //$addButton->addAttribute('id','addintegration');
-        $addButton->addClass('ui-btn-icon-add');
+        $addButton->addClass('ui - btn - icon - add');
         $addButton->setText(Loc::getMessage('BUTTON_ADD_INTEGRATION'));
         $addButton->setStyles(['float' => 'right']);
 
