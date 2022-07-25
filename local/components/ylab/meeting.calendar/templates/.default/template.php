@@ -14,4 +14,3 @@
         BX.YlabMeetingCalendar.create();
     })
 </script>
-
