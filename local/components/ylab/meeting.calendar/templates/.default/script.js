@@ -16,6 +16,30 @@ BX.ready(function(){
         showButtons: function (){
             var buttonsCont = BX.prop.get(this._calendar,  'buttonsCont', null);
             console.log(buttonsCont);
+            let elementSelect = BX.create({
+                tag: 'div',
+                props: {
+                    className: "main-ui-filter-search"
+                },
+                children: [
+                    BX.create({
+                        tag: 'select',
+                        props: {
+                            className: "main-ui-filter-search-filter"
+                        },
+                        children: [
+                            BX.create({
+                                tag: 'option',
+                                props: {
+                                    value: "select",
+                                    text: "select"
+                                }
+                            }),],
+                    })
+                ]
+            });
+
+            BX.insertBefore(elementSelect, buttonsCont);
         }
     }
 
@@ -26,30 +50,4 @@ BX.ready(function(){
     };
 });
 
-BX.ready(function() {
-    let elementSearch = document.querySelector(".main-ui-filter-search");
-    let elementSelect = BX.create({
-        tag: 'div',
-        props: {
-            className: "main-ui-filter-search"
-        },
-        children: [
-            BX.create({
-                tag: 'select',
-                props: {
-                    className: "main-ui-filter-search-filter"
-                },
-                children: [
-                    BX.create({
-                        tag: 'option',
-                        props: {
-                            value: "select",
-                            text: "select"
-                        }
-                    }),],
-            })
-        ]
-    })
 
-    BX.insertAfter(elementSelect, elementSearch);
-});
