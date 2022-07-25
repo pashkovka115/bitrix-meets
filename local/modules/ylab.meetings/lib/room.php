@@ -2,11 +2,11 @@
 
 namespace Ylab\Meetings;
 
+use Bitrix\Calendar\Internals\TypeTable;
 use Bitrix\Main\Entity;
-use Bitrix\Main\ORM\Query\Join;
-use Bitrix\Main\ORM\Fields\Relations\Reference;
 use Bitrix\Main\Localization\Loc;
-use Bitrix\Main\ORM\Fields\IntegerField;
+use Bitrix\Main\ORM\Fields\Relations\Reference;
+use Bitrix\Main\ORM\Query\Join;
 
 /**
  * Class for ORM Entity Room
@@ -83,6 +83,19 @@ class RoomTable extends Entity\DataManager
                 'INTEGRATION',
                 IntegrationTable::class,
                 Join::on('this.INTEGRATION_ID', 'ref.ID')
+            ))
+                ->configureJoinType('inner'),
+
+            //ID типа календаря
+            new Entity\IntegerField('CALENDAR_TYPE_XML_ID', [
+                'required' => true,
+                Loc::getMessage('ROOM_ENTITY_INTEGRATION_ID_FIELD'),
+            ]),
+            //JOIN на интеграцию (отношение "1:1")
+            (new Reference(
+                'CALENDARTYPE',
+                TypeTable::class,
+                Join::on('this.CALENDAR_TYPE_XML_ID', 'ref.XML_ID')
             ))
                 ->configureJoinType('inner')
         ];
