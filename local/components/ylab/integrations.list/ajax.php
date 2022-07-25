@@ -1,6 +1,6 @@
 <?php
 
-require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin_before.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin.php';
 
 $request = Bitrix\Main\Application::getInstance()->getContext()->getRequest();
 
@@ -9,28 +9,38 @@ if (!check_bitrix_sessid() || !$request->isPost())
     return;
 
 $action = $request->getPost('action');
-$fields = $action == 'submitadd' ? [
-    'NAME' => $request->getPost('NAME'),
-    'ACTIVITY' => $request->getPost('ACTIVITY') === 'Y',
-    'INTEGRATION_REF' => $request->getPost('INTEGRATION_REF'),
-    'LOGIN' => $request->getPost('LOGIN'),
-    'PASSWORD' => $request->getPost('PASSWORD'),
-] : ($action == 'submitedit' ? [
-    $request->getPost('ID') =>
-        [
-            'NAME' => $request->getPost('NAME'),
-            'ACTIVITY' => $request->getPost('ACTIVITY') === 'Y',
-            'INTEGRATION_REF' => $request->getPost('INTEGRATION_REF'),
-            'LOGIN' => $request->getPost('LOGIN'),
-            'PASSWORD' => $request->getPost('PASSWORD'),
-        ]
-] : null);
 
-$id = $action == 'edit_burger' ? $request->getPost('id')
-    : ($action == 'delete_burger' ? $request->getPost('id') : null);
+if ($action == 'submitadd') {
+    $fields = [
+        'NAME' => $request->getPost('NAME'),
+        'ACTIVITY' => $request->getPost('ACTIVITY') === 'Y',
+        'INTEGRATION_REF' => $request->getPost('INTEGRATION_REF'),
+        'LOGIN' => $request->getPost('LOGIN'),
+        'PASSWORD' => $request->getPost('PASSWORD'),
+    ];
+}
+if ($action == 'submitedit') {
+    $fields = ([
+        $request->getPost('ID') =>
+            [
+                'NAME' => $request->getPost('NAME'),
+                'ACTIVITY' => $request->getPost('ACTIVITY') === 'Y',
+                'INTEGRATION_REF' => $request->getPost('INTEGRATION_REF'),
+                'LOGIN' => $request->getPost('LOGIN'),
+                'PASSWORD' => $request->getPost('PASSWORD'),
+            ]
+    ]);
+}
 
 
-require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin_after.php';
+if ($action == 'edit_burger') {
+    $id = $request->getPost('id');
+}
+if ($action == 'delete_burger') {
+    $id = ($request->getPost('id'));
+}
+
+
 global $APPLICATION;
 $APPLICATION->IncludeComponent(
     'ylab:integrations.list',

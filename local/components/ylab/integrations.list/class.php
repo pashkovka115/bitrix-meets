@@ -80,7 +80,7 @@ class IntegrationsListComponent extends CBitrixComponent
                 }
             }
             if ($action['NAME'] == 'edit_burger') {
-                $this->arResult['ID'] = $action['ID'];
+                $this->fillEditFields($action['ID']);
                 $this->setTemplateName('edit');
                 $this->includeComponentTemplate('editintegrationform');
                 return;
@@ -90,6 +90,8 @@ class IntegrationsListComponent extends CBitrixComponent
                 $editResult = $this->editIntegration($action['FIELDS']);
                 if (!$editResult->isSuccess()) {
                     $this->arResult['SUBMIT_ERROR'] = $editResult->getErrorMessages();
+
+                    $this->fillEditFields(key($action['FIELDS']));
                     $this->setTemplateName('edit');
                     $this->arResult['ID'] = key($action['FIELDS']);
                     $this->includeComponentTemplate('editintegrationform');
@@ -454,5 +456,22 @@ class IntegrationsListComponent extends CBitrixComponent
             $result = IntegrationTable::delete($id);
         }
         return $result;
+    }
+
+    private function fillEditFields($id)
+    {
+        $res = Ylab\Meetings\IntegrationTable::getList([
+            'filter' => ['ID' => $id],
+            'select' => [
+                "*",
+            ]]);
+        foreach ($res->fetchAll() as $row) {
+            $this->arResult["ID"] = $row['ID'];
+            $this->arResult["NAME"] = $row['NAME'];
+            $this->arResult["ACTIVITY"] = $row['ACTIVITY'];
+            $this->arResult["INTEGRATION_REF"] = $row['INTEGRATION_REF'];
+            $this->arResult["LOGIN"] = $row['LOGIN'];
+            $this->arResult["PASSWORD"] = $row['PASSWORD'];
+        }
     }
 }
