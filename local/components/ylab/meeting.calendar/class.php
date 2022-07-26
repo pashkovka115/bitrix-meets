@@ -6,6 +6,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
 
 use Bitrix\Main\Context;
 use Bitrix\Main\Loader;
+use Ylab\Meetings\RoomTable;
 
 /**
  * Class YlabMeetingCalendarComponent
@@ -15,6 +16,20 @@ use Bitrix\Main\Loader;
 
 class YlabMeetingCalendarComponent extends CBitrixComponent
 {
+    /**
+     * Method getMeetingList
+     *
+     * @return array $arResult
+     * @throws Exception
+     */
+
+    public function getMeetingList(){
+        $result = RoomTable::getList(array(
+            'select' => array('ID', 'NAME','CALENDAR_TYPE_XML_ID')
+        ));
+        $this->arResult["MEETING_LIST"] = $result->fetchAll();
+    }
+
     /**
      * Method executeComponent
      *
@@ -35,6 +50,7 @@ class YlabMeetingCalendarComponent extends CBitrixComponent
                 $this->arResult["CALENDAR_TYPE"] = "user";
             }
         }
+        $this->getMeetingList();
         $this->includeComponentTemplate();
     }
 }
