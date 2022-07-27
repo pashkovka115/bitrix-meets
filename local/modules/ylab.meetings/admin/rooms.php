@@ -2,7 +2,7 @@
 require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin.php';
 ?>
 
-<?$APPLICATION->IncludeComponent(
+<? $APPLICATION->IncludeComponent(
   "ylab:meetings.list",
   "grid",
   array(
@@ -11,6 +11,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin.p
       1 => "NAME",
       2 => "ACTIVITY",
       3 => "INTEGRATION.NAME",
+      4 => "CALENDAR_TYPE_XML_ID",
     ),
     "FILTER_FIELDS" => array(
       0 => "ID",
@@ -22,4 +23,4 @@ require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin.p
     "COMPONENT_TEMPLATE" => "grid"
   ),
   false
-);?>
+); ?>

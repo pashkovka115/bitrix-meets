@@ -4,26 +4,32 @@ require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin_b
 
 $request = Bitrix\Main\Application::getInstance()->getContext()->getRequest();
 
-if (!check_bitrix_sessid() || !$request->isPost())
+if (!check_bitrix_sessid())
     return;
 
-$action = $request->getPost('action');
-$fields = $action == 'submitadd' ? [
-  'NAME' => $request->getPost('NAME'),
-  'ACTIVITY' => $request->getPost('ACTIVITY') === 'Y',
-  'INTEGRATION_ID' => $request->getPost('INTEGRATION_ID'),
-] : ($action == 'submitedit' ? [
-  $request->getPost('ID') =>
-    [
-      'NAME' => $request->getPost('NAME'),
-      'ACTIVITY' => $request->getPost('ACTIVITY') === 'Y',
-      'INTEGRATION_ID' => $request->getPost('INTEGRATION_ID'),
-    ]
-] : null);
+$action = $request->get('action');
 
-$id = $action == 'edit_burger' ? $request->getPost('ID')
+if ($action == 'submitadd') {
+    $APPLICATION->IncludeComponent(
+      "ylab:meeting.add",
+      "",
+      array()
+    );
+}
+
+if ($action == 'submitedit') {
+    $APPLICATION->IncludeComponent(
+      "ylab:meeting.edit",
+      "",
+      array(
+        "ELEMENT_ID" => $_REQUEST["ID"]
+      )
+    );
+}
+
+
+$id = $action == 'edit_burger' ? $request->get('ID')
   : ($action == 'delete_burger' ? $request->getPost('ID') : null);
-
 
 require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin_after.php';
 global $APPLICATION;
@@ -35,7 +41,6 @@ $APPLICATION->IncludeComponent(
   array(
     'ACTION' => array(
       'NAME' => $action,
-      'FIELDS' => $fields,
       'ID' => $id,
     ),
     "AJAX_MODE" => "Y",
@@ -47,6 +52,7 @@ $APPLICATION->IncludeComponent(
       1 => "NAME",
       2 => "ACTIVITY",
       3 => "INTEGRATION.NAME",
+      4 => "CALENDAR_TYPE_XML_ID",
     ),
     "FILTER_FIELDS" => array(
       0 => "ID",

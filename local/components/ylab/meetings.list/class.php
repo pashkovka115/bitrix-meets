@@ -7,6 +7,7 @@ use Bitrix\Main\Loader;
 use Bitrix\Main\ORM;
 use Bitrix\Main\UI\Filter\Options as FilterOptions;
 use Ylab\Meetings\IntegrationTable;
+use Bitrix\Calendar\Internals\TypeTable;
 use Ylab\Meetings\RoomTable;
 
 
@@ -53,47 +54,22 @@ class MeetingsListComponent extends CBitrixComponent
             $action = $this->arParams['ACTION'];
 
             if ($action['NAME'] == 'add_item') {
-                $integrations = IntegrationTable::getList();
-                $this->arResult['INTEGRATIONS'] = $integrations->fetchAll();
                 $this->setTemplateName('edit');
                 $this->includeComponentTemplate('addroomform');
                 return;
             }
             if ($action['NAME'] == 'submitadd') {
-                $addResult = $this->addRoom($action['FIELDS']);
-                if (!$addResult->isSuccess()) {
-                    $this->arResult['SUBMIT_ERROR'] = $addResult->getErrorMessages();
-                    $this->setTemplateName('edit');
-                    $this->includeComponentTemplate('addroomform');
-                    return;
-                } else {
-                    LocalRedirect("/bitrix/admin/ylab.meetings_rooms.php");
-                }
+                LocalRedirect("/bitrix/admin/ylab.meetings_rooms.php");
             }
 
             if ($action['NAME'] == 'edit_burger') {
-                $this->arResult['ID'] = $action['ID'];
-                if ($this->arResult['ID']) {
-                    $this->arResult['ITEM'] = RoomTable::getRowById($this->arResult['ID']);
-                }
-                $integrations = IntegrationTable::getList();
-                $this->arResult['INTEGRATIONS'] = $integrations->fetchAll();
                 $this->setTemplateName('edit');
                 $this->includeComponentTemplate('editroomform');
                 return;
             }
 
             if ($action['NAME'] == 'submitedit') {
-                $editResult = $this->editRoom($action['FIELDS']);
-                if (!$editResult->isSuccess()) {
-                    $this->arResult['SUBMIT_ERROR'] = $editResult->getErrorMessages();
-                    $this->setTemplateName('edit');
-                    $this->arResult['ID'] = key($action['FIELDS']);
-                    $this->includeComponentTemplate('editroomform');
-                    return;
-                } else {
-                    LocalRedirect("/bitrix/admin/ylab.meetings_rooms.php");
-                }
+                LocalRedirect("/bitrix/admin/ylab.meetings_rooms.php");
             }
 
             if ($action['NAME'] == 'delete_burger') {
@@ -223,7 +199,7 @@ class MeetingsListComponent extends CBitrixComponent
                   // TODO: необходимо реализовать отправку в ajax.php
                   // 'onclick' => 'document.location.href="/' . $arItem['ID'] . '/edit/"',
                 'onclick' => "new function (url, data) { var form = document.createElement('form');
-                    document.body.appendChild(form); form.target = '_self'; form.method = 'post';
+                    document.body.appendChild(form); form.target = '_self'; form.method = 'get';
                     form.action = url; for (var name in data) { var input = document.createElement('input');
                     input.type = 'hidden'; input.name = name; input.value = data[name]; form.appendChild(input);
                     } form.submit(); document.body.removeChild(form); }('" . $this->getAjaxPath() .
