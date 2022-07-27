@@ -3,6 +3,7 @@
 namespace Ylab\Meetings\Calendar;
 
 use Bitrix\Main\ArgumentException;
+use Bitrix\Main\Loader;
 use CCalendarType;
 
 /**
@@ -20,6 +21,8 @@ class CalendarType
      */
     public static function add(array $params)
     {
+        Loader::includeModule('calendar');
+
         if (!$params['XML_ID'] or !$params['NAME']){
             throw new ArgumentException('Необходимо передать: XML_ID и NAME');
         }
@@ -39,6 +42,8 @@ class CalendarType
      */
     public static function getAll()
     {
+        Loader::includeModule('calendar');
+
         return CCalendarType::GetList();
     }
 
@@ -50,6 +55,8 @@ class CalendarType
      */
     public static function getById(string $xml_id)
     {
+        Loader::includeModule('calendar');
+
         $item = CCalendarType::GetList([
             'arFilter' => ['XML_ID' => $xml_id]
         ]);
@@ -77,6 +84,8 @@ class CalendarType
      */
     public static function delete(string $xml_id)
     {
+        Loader::includeModule('calendar');
+
         CCalendarType::Delete($xml_id);
     }
 
@@ -89,6 +98,8 @@ class CalendarType
      */
     public static function edit($params)
     {
+        Loader::includeModule('calendar');
+
         if (!$params['XML_ID'] or !$params['NAME']){
             throw new ArgumentException('Необходимо передать: XML_ID и NAME');
         }
