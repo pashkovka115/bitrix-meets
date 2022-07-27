@@ -67,15 +67,15 @@ $tabControl = new CAdminTabControl("tabControl", $aTabs);
 
     $tabControl->BeginNextTab();
 
-    foreach ($arAllOptions["main"] as $arAllOption) {
-        if (isset($arAllOption[3]) && $arAllOption[3][0] == "select_user") {
+    foreach ($arAllOptions["main"] as $key => $value) {
+        if ($value[0] == "select_user") {
             ?>
             <tr>
                 <td width="50%"
                     class="adm-detail-content-cell-l"><?= Loc::getMessage('YLAB_MEETINGS_SELECT_USER') ?></td>
                 <td width="50%" class="adm-detail-content-cell-r">
                     <?
-                    $selectedUserCodes = explode(',', COption::GetOptionString($module_id, $arAllOption[3][0]));
+                    $selectedUserCodes = explode(',', COption::GetOptionString($module_id, $value[0]));
                     $APPLICATION->IncludeComponent(
                         'bitrix:main.user.selector',
                         '',
@@ -95,10 +95,10 @@ $tabControl = new CAdminTabControl("tabControl", $aTabs);
             </tr>
             <?
         } else {
-            __AdmSettingsDrawRow($module_id, $arAllOption);
+            __AdmSettingsDrawRow($module_id, $value);
         }
-
     }
+
     //__AdmSettingsDrawList($module_id, $arAllOptions["main"]);
 
     $tabControl->BeginNextTab();
