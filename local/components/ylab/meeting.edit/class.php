@@ -23,7 +23,7 @@ class YlabMeetingEdit extends CBitrixComponent
      */
     private function checkModules()
     {
-        if (!Loader::includeModule('ylab.meetings')) {
+        if (!Loader::includeModule('ylab.meetings') or !Loader::includeModule('calendar')) {
             throw new \Exception(Loc::getMessage('YLAB_MEETING_EDIT_ERROR_CHECK_COMPONENT'));
         }
 
