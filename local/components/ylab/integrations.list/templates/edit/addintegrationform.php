@@ -25,9 +25,10 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
         <p><input id="input-password" type="password" name="PASSWORD"></p>
 
     </div>
+    <div id="errors"></div>
     <button id="my-button"><?= Loc::getMessage('INTEGRATION_FORM_SUBMIT_BUTTON') ?></button>
     <div id="my-result" style="margin:10px 0;padding:.5em;border:1px solid #ececec;"></div>
-    </div>
+
 
     <script>
         const name = BX('input-name')
@@ -40,7 +41,9 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
         const result = BX('my-result')
 
         BX.bind(button, 'click', () => {
-            console.log(activity.value)
+
+            document.getElementById('errors').innerHTML = '';
+
             new function () {
                 var request = BX.ajax.runAction('ylab:meetings.api.integrationcontroller.add', {
                     data: {
@@ -53,8 +56,15 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
                         }
                     }
                 });
+                BX.write
                 request.then(function (response) {
-                    console.log(response);
+                    if (!response['data']['IS_SUCCESS']) {
+                        var errors = response['data']['ERROR_MESSAGES']
+                        for (var i in errors) {
+                            document.getElementById('errors').innerHTML +=
+                                '<p><span style=\"color: red; \">' + errors[i] + '</span> </p>'
+                        }
+                    }
                 });
             }
         })
