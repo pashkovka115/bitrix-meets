@@ -23,7 +23,6 @@ class IntegrationController extends Controller
             'LOGIN' => $fields['LOGIN'],
             'PASSWORD' => $fields['PASSWORD']
         ));
-        AddMessage2Log($addResult->getErrorMessages());
         if ($addResult->isSuccess()) {
             return CUtil::PhpToJSObject([
                 'IS_SUCCESS' => true,
