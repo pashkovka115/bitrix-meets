@@ -2,36 +2,62 @@
 
 use \Bitrix\Main\Localization\Loc;
 
+CJSCore::Init(array('ajax'));
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
     die();
 }
 ?>
-<form action="" method="POST">
-    <input type="hidden" name="action" value="submitadd">
-    <?= bitrix_sessid_post() ?>
-    <label for="NAME"><?= Loc::getMessage('INTEGRATION_FORM_NAME_FIELD') ?> </label>
-    <p><input type="string" name="NAME"/></p>
 
-    <label for="ACTIVITY"><?= Loc::getMessage('INTEGRATION_FORM_ACTIVITY_FIELD') ?> </label>
-    <p><input type="checkbox" name="ACTIVITY" id="is_avilable" value="Y" checked></p>
+    <div id="my-form">
+        <label for="NAME"><?= Loc::getMessage('INTEGRATION_FORM_NAME_FIELD') ?> </label>
+        <p><input id="input-name" type="string" name="NAME"></p>
 
-    <label for="INTEGRATION_REF"><?= Loc::getMessage('INTEGRATION_INTEGRATION_REF_ACTIVITY_FIELD') ?> </label>
-    <p><input type="string" name="INTEGRATION_REF"></p>
+        <label for="ACTIVITY"><?= Loc::getMessage('INTEGRATION_FORM_ACTIVITY_FIELD') ?> </label>
+        <p><input id="input-activity" type="checkbox" name="ACTIVITY" value="Y" checked></p>
 
-    <label for="LOGIN"><?= Loc::getMessage('INTEGRATION_FORM_LOGIN_FIELD') ?> </label>
-    <p><input type="string" name="LOGIN"></p>
+        <label for="INTEGRATION_REF"><?= Loc::getMessage('INTEGRATION_INTEGRATION_REF_ACTIVITY_FIELD') ?> </label>
+        <p><input id="input-inegrationref" type="string" name="INTEGRATION_REF"></p>
 
-    <label for="PASSWORD"><?= Loc::getMessage('INTEGRATION_FORM_PASSWORD_FIELD') ?> </label>
-    <p><input type="password" name="PASSWORD"></p>
-    <?php
-    if ($arResult['SUBMIT_ERROR']) {
-        foreach ($arResult['SUBMIT_ERROR'] as $errorMessage) {
-            ?>
-            <p><span style="color: red; ">
-                    <?= $errorMessage ?>
-                </span>
-            </p>
-        <?php }
-    } ?>
-    <input type="submit" name="" value="<?= Loc::getMessage('INTEGRATION_FORM_SUBMIT_BUTTON') ?>">
-</form>
+        <label for="LOGIN"><?= Loc::getMessage('INTEGRATION_FORM_LOGIN_FIELD') ?> </label>
+        <p><input id="input-login" type="string" name="LOGIN"></p>
+
+        <label for="PASSWORD"><?= Loc::getMessage('INTEGRATION_FORM_PASSWORD_FIELD') ?> </label>
+        <p><input id="input-password" type="password" name="PASSWORD"></p>
+
+    </div>
+    <button id="my-button"><?= Loc::getMessage('INTEGRATION_FORM_SUBMIT_BUTTON') ?></button>
+    <div id="my-result" style="margin:10px 0;padding:.5em;border:1px solid #ececec;"></div>
+    </div>
+
+    <script>
+        const name = BX('input-name')
+        const activity = BX('input-activity')
+        const intref = BX('input-inegrationref')
+        const login = BX('input-login')
+        const password = BX('input-password')
+
+        const button = BX('my-button')
+        const result = BX('my-result')
+
+        BX.bind(button, 'click', () => {
+            console.log(activity.value)
+            new function () {
+                var request = BX.ajax.runAction('ylab:meetings.api.integrationcontroller.add', {
+                    data: {
+                        fields: {
+                            'NAME': name.value,
+                            'ACTIVITY': activity.value,
+                            'INTEGRATION_REF': intref.value,
+                            'LOGIN': login.value,
+                            'PASSWORD': password.value
+                        }
+                    }
+                });
+                request.then(function (response) {
+                    console.log(response);
+                });
+            }
+        })
+    </script>
+<?php
+$this->addExternalJs('/local/components/ylab/integrations.list/templates/edit/script.js'); ?>

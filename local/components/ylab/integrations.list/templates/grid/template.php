@@ -91,8 +91,10 @@ global $APPLICATION;
                 ],
 
             );
+            $this->addExternalJs('/local/components/ylab/integrations.list/templates/grid/script.js');
             ?>
 
         </div>
     </div>
+
 </div>
