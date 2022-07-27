@@ -78,7 +78,7 @@ class IntegrationTable extends Entity\DataManager
             ]),
             //Логин от интеграции
             new Entity\StringField('LOGIN', [
-                'required' => true,
+//                'required' => true,
                 'title' => Loc::getMessage('INTEGRATION_ENTITY_LOGIN_FIELD'),
                 'validation' => function () {
                     return [
@@ -93,7 +93,7 @@ class IntegrationTable extends Entity\DataManager
             ]),
             //Пароль от интеграции
             new Entity\StringField('PASSWORD', [
-                'required' => true,
+//                'required' => true,
                 'title' => Loc::getMessage('INTEGRATION_ENTITY_PASSWORD_FIELD'),
                 'validation' => function () {
                     return [
