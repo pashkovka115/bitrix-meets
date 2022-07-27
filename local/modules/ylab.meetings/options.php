@@ -68,14 +68,14 @@ $tabControl = new CAdminTabControl("tabControl", $aTabs);
     $tabControl->BeginNextTab();
 
     foreach ($arAllOptions["main"] as $key => $value) {
-        if ($value[0] == "select_user") {
+        if ($value[3][0] == "select_user") {
             ?>
             <tr>
                 <td width="50%"
                     class="adm-detail-content-cell-l"><?= Loc::getMessage('YLAB_MEETINGS_SELECT_USER') ?></td>
                 <td width="50%" class="adm-detail-content-cell-r">
                     <?
-                    $selectedUserCodes = explode(',', COption::GetOptionString($module_id, $value[0]));
+                    $selectedUserCodes = explode(',', COption::GetOptionString($module_id, $value[3][0]));
                     $APPLICATION->IncludeComponent(
                         'bitrix:main.user.selector',
                         '',
