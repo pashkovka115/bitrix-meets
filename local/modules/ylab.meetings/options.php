@@ -60,22 +60,24 @@ $tabControl = new CAdminTabControl("tabControl", $aTabs);
 ?>
 <form method="post"
       action="<?= $APPLICATION->GetCurPage() ?>?mid=<?= htmlspecialcharsbx($module_id) ?>&lang=<?= LANGUAGE_ID ?>"
-      name="ylab_meetings"><?
+      name="ylab_meetings">
+    <?php
     echo bitrix_sessid_post();
 
     $tabControl->Begin();
 
     $tabControl->BeginNextTab();
 
-    foreach ($arAllOptions["main"] as $key => $value) {
-        if ($value[3][0] == "select_user") {
+    foreach ($arAllOptions["main"] as $key => $option) {
+        list($optionCode, $optionName, $optionValue, $optionType) = $option;
+        if ($optionType[0] == "select_user") {
             ?>
             <tr>
                 <td width="50%"
                     class="adm-detail-content-cell-l"><?= Loc::getMessage('YLAB_MEETINGS_SELECT_USER') ?></td>
                 <td width="50%" class="adm-detail-content-cell-r">
-                    <?
-                    $selectedUserCodes = explode(',', COption::GetOptionString($module_id, $value[3][0]));
+                    <?php
+                    $selectedUserCodes = explode(',', COption::GetOptionString($module_id, $optionType[0]));
                     $APPLICATION->IncludeComponent(
                         'bitrix:main.user.selector',
                         '',
@@ -87,19 +89,25 @@ $tabControl = new CAdminTabControl("tabControl", $aTabs);
                             "USE_SYMBOLIC_ID" => false,
                             "API_VERSION" => 2,
                             "SELECTOR_OPTIONS" => [
+                                'enableUsers' => 'Y',
+                                'departmentSelectDisable' => "Y",
+                                'context' => 'USER_SELECT_CONFIG_QUEUE',
+                                'contextCode' => 'U',
+                                'enableAll' => 'N',
+                                'userSearchArea' => 'I',
+                                'allowUserSearch' => 'Y'
                             ]
                         ]
                     );
                     ?>
                 </td>
             </tr>
-            <?
+            <?php
+            unset($arAllOptions['main'][$key]);
         } else {
-            __AdmSettingsDrawRow($module_id, $value);
+            __AdmSettingsDrawRow($module_id, $option);
         }
     }
-
-    //__AdmSettingsDrawList($module_id, $arAllOptions["main"]);
 
     $tabControl->BeginNextTab();
 
@@ -108,5 +116,6 @@ $tabControl = new CAdminTabControl("tabControl", $aTabs);
     $tabControl->Buttons([]);
 
     $tabControl->End();
-    ?><input type="hidden" name="Update" value="Y"
+    ?>
+    <input type="hidden" name="Update" value="Y"
 </form>
