@@ -67,7 +67,7 @@ class HiBlockMeetingZoom
                 'UF_CALENDAR_TYPE_XML_ID' => [
                     'ENTITY_ID' => $UF_id,
                     'FIELD_NAME' => 'UF_CALENDAR_TYPE_XML_ID',
-                    'USER_TYPE_ID' => 'integer',
+                    'USER_TYPE_ID' => 'string',
                     'MANDATORY' => 'Y',
                     "EDIT_FORM_LABEL" => ['ru' => 'тип календаря', 'en' => 'type calendar'],
                     "LIST_COLUMN_LABEL" => ['ru' => '', 'en' => ''],
