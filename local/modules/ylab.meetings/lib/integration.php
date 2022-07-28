@@ -77,30 +77,14 @@ class IntegrationTable extends Entity\DataManager
                 },
             ]),
             //Логин от интеграции
+            // Логин нужен не для всех сервисов
             new Entity\StringField('LOGIN', [
-//                'required' => true,
                 'title' => Loc::getMessage('INTEGRATION_ENTITY_LOGIN_FIELD'),
-                'validation' => function () {
-                    return [
-                        //Проверка на минимальную и максимальную длину строки
-                        new Entity\Validator\Length(4, 15),
-                        // Регулярное выражение для проверки
-                        // ^[a-zA-Z] - первый символ только буква (латинская)
-                        // Остальные - латинские буквы и символы '_' и '.'
-                        new Entity\Validator\RegExp('/^[a-zA-Z][a-zA-Z0-9-_\.]/')
-                    ];
-                },
             ]),
             //Пароль от интеграции
+            // Пароль нужен не для всех сервисов
             new Entity\StringField('PASSWORD', [
-//                'required' => true,
                 'title' => Loc::getMessage('INTEGRATION_ENTITY_PASSWORD_FIELD'),
-                'validation' => function () {
-                    return [
-                        //Проверка на минимальную и максимальную длину строки
-                        new Entity\Validator\Length(4, 15),
-                    ];
-                },
             ]),
             //Обратный референс (для реализации двунаправленности) (отношение "1 интеграция - N комнат")
             (new OneToMany('ROOMS', RoomTable::class, 'INTEGRATION'))
