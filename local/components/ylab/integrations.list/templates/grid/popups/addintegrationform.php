@@ -7,7 +7,6 @@ use Bitrix\Main\Page\Asset;
 CJSCore::Init(array('ajax'));
 
 ?>
-<script src="/local/components/ylab/integrations.list/templates/grid/popups/popupscript.js"></script>
 <div id="add-form">
     <label for="NAME"><?= Loc::getMessage('INTEGRATION_FORM_NAME_FIELD') ?> </label>
     <p><input id="input-name" type="string" name="NAME"></p>

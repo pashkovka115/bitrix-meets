@@ -1,27 +1,19 @@
-BX.namespace("BX.Ylab.Integrations.Grid.LeftPanel");
+BX.namespace("BX.Ylab.Integrations.LeftPanel")
 
-BX.Ylab.Integrations.Grid.LeftPanel.action = function (url, data) {
-    var form = document.createElement('form');
-    document.body.appendChild(form);
-    form.target = '_self';
-    form.method = 'post';
-    form.action = url;
-    for (var name in data) {
-        var input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = name;
-        input.value = data[name];
-        form.appendChild(input);
+
+BX.Ylab.Integrations.LeftPanel.action = function (data) {
+    if (data['action'] === 'delete_burger') {
+        var request = BX.ajax.runAction('ylab:meetings.api.integrationcontroller.delete', {
+            data: {
+                'id': data['id']
+            }
+        })
+        var grid = BX.Main.gridManager.getInstanceById('ylab_meetings_integrations_list')
+        BX.UI.Dialogs.MessageBox.alert("Интеграция с ID: " + data['id'] + " удалена!",
+            "Сообщение о добавлении интеграции");
+        grid.reloadTable()
     }
-    form.submit();
-    document.body.removeChild(form);
-
 }
-BX.Ylab.Integrations.Grid.LeftPanel.create = function (url, data) {
-    let _self = new BX.Ylab.Integrations.Grid.LeftPanel.action(url, data)
-    return _self
-}
-///////////
 
 
 var popup = function () {
@@ -61,7 +53,7 @@ function submit_button() {
                     'PASSWORD': integration_password.value
                 }
             }
-        });
+        })
         request.then(function (response) {
             if (!response['data']['IS_SUCCESS']) {
                 var errors = response['data']['ERROR_MESSAGES']
@@ -70,8 +62,14 @@ function submit_button() {
                         '<p><span style=\"color: red; \">' + errors[i] + '</span> </p>'
                 }
             }
-        });
+            if (response['data']['IS_SUCCESS']) {
+
+                BX.WindowManager.Get().Close()
+                var grid = BX.Main.gridManager.getInstanceById('ylab_meetings_integrations_list')
+                BX.UI.Dialogs.MessageBox.alert("Интеграция '" + integration_name.value + "' успешно добавлена!",
+                    "Сообщение о добавлении интеграции");
+                grid.reloadTable();
+            }
+        })
     }
 }
-
-

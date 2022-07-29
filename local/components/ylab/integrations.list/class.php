@@ -117,6 +117,7 @@ class IntegrationsListComponent extends CBitrixComponent
     {
 
         $this->arResult['GRID_ID'] = $this->getGridId();
+        AddMessage2Log($this->getGridId());
         $this->arResult['GRID_COLUMNS'] = $this->getGridColumns();
         $this->arResult['GRID_ROWS'] = $this->getGridRows();
         $this->arResult['GRID_NAV'] = $this->getGridNav();
@@ -154,9 +155,8 @@ class IntegrationsListComponent extends CBitrixComponent
             $arGridElement['actions'] = [
                 [
                     'text' => Loc::getMessage('YLAB_MEETING_LIST_CLASS_DELETE'),
-                    'onclick' => 'BX.Ylab.Integrations.Grid.LeftPanel.create(' . CUtil::PhpToJSObject($this->getAjaxPath()) . ', ' .
+                    'onclick' => 'BX.Ylab.Integrations.LeftPanel.action(' .
                         CUtil::PhpToJSObject([
-                            'sessid' => bitrix_sessid(),
                             'action' => 'delete_burger',
                             'id' => $arItem['ID'],
                         ]) . ')'
@@ -378,7 +378,7 @@ class IntegrationsListComponent extends CBitrixComponent
     {
         \Bitrix\Main\UI\Extension::load("ui.buttons.icons");
         $addButton = new Bitrix\UI\Buttons\CreateButton();
-        $addButton->addAttribute('onclick', 'popup.Show()');
+        $addButton->addAttribute('onclick', 'popup().Show()');
         $addButton->addClass('ui-btn-icon-add');
         $addButton->setText(Loc::getMessage('BUTTON_ADD_INTEGRATION'));
         $addButton->setStyles(['float' => 'right']);
@@ -408,23 +408,6 @@ class IntegrationsListComponent extends CBitrixComponent
     public function getAjaxPath(): string
     {
         return $this->getPath() . '/ajax.php';
-    }
-
-    /**
-     * @param array $fields
-     * @return \Bitrix\Main\ORM\Data\AddResult
-     * @throws Exception
-     */
-    private function addIntegration(array $fields): \Bitrix\Main\ORM\Data\AddResult
-    {
-
-        return IntegrationTable::add(array(
-            'NAME' => $fields['NAME'],
-            'ACTIVITY' => $fields['ACTIVITY'],
-            'INTEGRATION_REF' => $fields['INTEGRATION_REF'],
-            'LOGIN' => $fields['LOGIN'],
-            'PASSWORD' => $fields['PASSWORD']
-        ));
     }
 
     private function editIntegration($fields)

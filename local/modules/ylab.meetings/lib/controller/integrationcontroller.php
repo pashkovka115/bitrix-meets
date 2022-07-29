@@ -24,9 +24,9 @@ class IntegrationController extends Controller
             'PASSWORD' => $fields['PASSWORD']
         ));
         if ($addResult->isSuccess()) {
-            return CUtil::PhpToJSObject([
+            return [
                 'IS_SUCCESS' => true,
-            ]);
+            ];
         } else {
             return [
                 'IS_SUCCESS' => false,
@@ -40,8 +40,22 @@ class IntegrationController extends Controller
 
     }
 
-    public function deleteAction($id)
+    /**
+     * @param int|array $id
+     * @throws \Exception
+     */
+    public function deleteAction($id): array
     {
-
+        AddMessage2Log($id);
+        /** @var Bitrix\Main\Entity\UpdateResult $result */
+        if (is_array($id)) {
+            foreach ($id as $item)
+                $result = IntegrationTable::delete($item);
+        } else {
+            $result = IntegrationTable::delete($id);
+        }
+        if ($result->isSuccess()) {
+            return ['IS_SUCCESS' => true];
+        }
     }
 }
