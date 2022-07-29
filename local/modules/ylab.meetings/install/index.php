@@ -7,6 +7,7 @@ use Bitrix\Main\IO\File;
 use Bitrix\Main\ModuleManager;
 use Bitrix\Main\Loader;
 use Bitrix\Main\EventManager;
+use Ylab\Meetings\HiBlockMeetingZoom;
 
 /**
  * Class ylab_meetings
@@ -19,6 +20,7 @@ class ylab_meetings extends CModule
      * @var string
      */
     public $MODULE_ID = 'ylab.meetings';
+    private HiBlockMeetingZoom $hiBlockMeetingZoom;
 
     /**
      * constructor
@@ -45,6 +47,7 @@ class ylab_meetings extends CModule
     {
         ModuleManager::registerModule($this->MODULE_ID);
         if (Loader::includeModule($this->MODULE_ID)) {
+            $this->hiBlockMeetingZoom = new HiBlockMeetingZoom();
             $this->installDB();
             $this->installFiles();
             $this->installEvents();
@@ -59,6 +62,7 @@ class ylab_meetings extends CModule
     public function DoUninstall()
     {
         if (Loader::includeModule($this->MODULE_ID)) {
+            $this->hiBlockMeetingZoom = new HiBlockMeetingZoom();
             $this->uninstallDB();
             $this->uninstallFiles();
             $this->uninstallEvents();
@@ -137,6 +141,7 @@ class ylab_meetings extends CModule
             $sQuery = file_get_contents($sPath . $file);
             $oConn->executeSqlBatch($sQuery);
         }
+        $this->hiBlockMeetingZoom->create();
 
         return true;
     }
@@ -158,6 +163,8 @@ class ylab_meetings extends CModule
             $sQuery = file_get_contents($sPath . $file);
             $oConn->executeSqlBatch($sQuery);
         }
+
+        $this->hiBlockMeetingZoom->delete();
 
         return true;
     }
