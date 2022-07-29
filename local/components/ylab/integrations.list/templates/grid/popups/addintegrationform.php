@@ -1,13 +1,13 @@
 <?php
+require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
 
 use \Bitrix\Main\Localization\Loc;
+use Bitrix\Main\Page\Asset;
 
 CJSCore::Init(array('ajax'));
-if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
-    die();
-}
-?>
 
+?>
+<script src="/local/components/ylab/integrations.list/templates/grid/popups/popupscript.js"></script>
 <div id="add-form">
     <label for="NAME"><?= Loc::getMessage('INTEGRATION_FORM_NAME_FIELD') ?> </label>
     <p><input id="input-name" type="string" name="NAME"></p>
@@ -26,8 +26,3 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 
 </div>
 <div id="errors"></div>
-<button id="my-button"><?= Loc::getMessage('INTEGRATION_FORM_SUBMIT_BUTTON') ?></button>
-<div id="my-result" style="margin:10px 0;padding:.5em;border:1px solid #ececec;"></div>
-
-
-<script src="/local/components/ylab/integrations.list/templates/edit/script.js"></script>

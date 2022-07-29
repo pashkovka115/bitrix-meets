@@ -378,9 +378,8 @@ class IntegrationsListComponent extends CBitrixComponent
     {
         \Bitrix\Main\UI\Extension::load("ui.buttons.icons");
         $addButton = new Bitrix\UI\Buttons\CreateButton();
-        $addButton->addAttribute('type', 'submit');
-        //$addButton->addAttribute('id','addintegration');
-        $addButton->addClass('ui - btn - icon - add');
+        $addButton->addAttribute('onclick', 'popup.Show()');
+        $addButton->addClass('ui-btn-icon-add');
         $addButton->setText(Loc::getMessage('BUTTON_ADD_INTEGRATION'));
         $addButton->setStyles(['float' => 'right']);
 

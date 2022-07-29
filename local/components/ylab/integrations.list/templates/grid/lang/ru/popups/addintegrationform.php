@@ -1,6 +1,4 @@
 <?php
-$MESS['YLAB_INTEGRATIONS_LIST_ADD_SUCCESS_PT_1'] = 'Интеграция: "';
-$MESS['YLAB_INTEGRATIONS_LIST_ADD_SUCCESS_PT_2'] = '" успешно добавлена!';
 $MESS["INTEGRATION_FORM_NAME_FIELD"] = "Название интеграции: ";
 $MESS["INTEGRATION_FORM_ACTIVITY_FIELD"] = "Активность: ";
 $MESS["INTEGRATION_INTEGRATION_REF_ACTIVITY_FIELD"] = "Ссылка на класс интеграции: ";
