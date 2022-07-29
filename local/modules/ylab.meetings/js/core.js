@@ -1,0 +1,1 @@
+console.log("/local/modules/ylab.meetings/js/core.js init");
