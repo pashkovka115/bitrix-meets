@@ -32,14 +32,18 @@ class CalendarEvent
                 $integration = IntegrationBase::init($room['INTEGRATION_ID']);
                 if ($integration){
                     $std = $integration->getLink();
-                    $link = $std->start_url;
+                    $link_owner = $std->start_url;
+                    $link_join = $std->join_url;
+                    $password_join = $std->password;
                 }
 
                 self::addEvent([
                     'UF_ID_EVENT_CALENDAR' => $event['ID'] * 1,
                     'UF_ID_ROOM' => $room['ID'],
                     'UF_CALENDAR_TYPE_XML_ID' => $event['CAL_TYPE'],
-                    'UF_URL_START' => $link,
+                    'UF_URL_START' => $link_owner,
+                    'UF_URL_JOIN' => $link_join,
+                    'UF_PASSWORD_JOIN' => $password_join,
                 ]);
 
                 CCalendarEvent::edit(["arFields" => $event]);
