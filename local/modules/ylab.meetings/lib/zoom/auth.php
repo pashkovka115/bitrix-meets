@@ -5,6 +5,7 @@ namespace Ylab\Meetings\Zoom;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\Diag\Debug;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 class Auth
 {
@@ -20,6 +21,11 @@ class Auth
 
     const BASE_URL = 'https://zoom.us';
     const URL_NEW_TOKEN = '/oauth/token';
+    /**
+     * Количество попыток авторизации
+     */
+    const COUNT_AUTH = 3;
+    const LOG_FILE = 'local/log/zoom_auth.txt';
 
 
     public function __construct()
@@ -37,10 +43,19 @@ class Auth
      */
     public function authorization()
     {
-        $this->deleteToken();
+        static $num = 1;
+
         $token = $this->getNewToken();
-        if ($token) {
+        if ($token && $token != 'error') {
+            $this->deleteToken();
             $this->saveToken($token);
+        }else{
+            if ($num >= self::COUNT_AUTH){
+                exit();
+            }
+            Debug::writeToFile('Ошибка авторизации', 'Auth', self::LOG_FILE);
+            $num++;
+            $this->authorization();
         }
 
         return $token;
@@ -75,14 +90,31 @@ class Auth
                     "code" => $_GET['code'],
                     "redirect_uri" => $this->urlRedirect
                 ],
+                'connect_timeout' => 5
             ]);
+
             $token = json_decode($response->getBody()->getContents(), true);
 
-        } catch (\Exception $e) {
-            echo $e->getMessage();
+        } catch (RequestException $e) {
+            if ($e->hasResponse()) {
+                $exception = (string) $e->getResponse()->getBody();
+                $exception = json_decode($exception);
+                Debug::writeToFile(json_encode($exception), 'exception_error', self::LOG_FILE);
+            } else {
+                Debug::writeToFile('Ошибка: ' . http_response_code(503), 'exception_503', self::LOG_FILE);
+            }
         }
 
-        return isset($token['access_token']) ? $token['access_token'] : false;
+        if (isset($token['access_token'])){
+            $result = $token['access_token'];
+        }elseif (is_string($token)){
+            $result = 'error';
+            Debug::writeToFile($token, 'error_token', self::LOG_FILE);
+        }else{
+            $result = (bool)$token;
+        }
+
+        return $result;
     }
 
 

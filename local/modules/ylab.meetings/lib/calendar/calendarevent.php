@@ -28,7 +28,6 @@ class CalendarEvent
                     'limit' => 1
                 ])->fetch();
 
-                $link = 'error';
                 $integration = IntegrationBase::init($room['INTEGRATION_ID']);
                 if ($integration){
                     $std = $integration->getLink();
