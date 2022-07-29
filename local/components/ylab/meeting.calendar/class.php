@@ -42,7 +42,7 @@ class YlabMeetingCalendarComponent extends CBitrixComponent
     {
         if (Loader::IncludeModule('ylab.meetings')) {
             $request = Context::getCurrent()->getRequest();
-            $value = $request->getQuery("calendar_type");
+            $value = $request->getQuery("calendarType");
             if ($value){
                 $this->arResult["CALENDAR_TYPE"] = $value;
             }

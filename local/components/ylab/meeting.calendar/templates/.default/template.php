@@ -4,6 +4,11 @@
 use Bitrix\Main\Localization\Loc;
 ?>
 
+<script type="text/javascript">
+    var arElementsObj = new arElements(<?=CUtil::PHPToJSObject($arResult["MEETING_LIST"]);?>);
+    BX.message({SELECT_TYPE:'<?=Loc::getMessage("YLAB_MEETING_CALENDAR_SELECT_TYPE")?>'});
+</script>
+
 <?$APPLICATION->IncludeComponent("bitrix:calendar.grid","",Array(
         "CALENDAR_TYPE" => $arResult["CALENDAR_TYPE"],
         "OWNER_ID" => $USER->GetID(),
@@ -11,13 +16,9 @@ use Bitrix\Main\Localization\Loc;
         "ALLOW_RES_MEETING" => "Y"
     )
 );?>
-<div id="select-meet">
-    <form action="" method="get">
-        <select name="calendar_type" onchange="javascript:this.form.submit()">
-            <option><?= Loc::getMessage('YLAB_MEETING_CALENDAR_SELECT_TYPE') ?></option>
-            <?foreach($arResult["MEETING_LIST"] as $arItems):?>
-                <option value="<?=$arItems["CALENDAR_TYPE_XML_ID"]?>"><?=$arItems["CALENDAR_TYPE_XML_ID"]?></option>
-            <?endforeach;?>
-        </select>
-    </form>
-</div>
+
+<script type="text/javascript">
+    BX.ready(function(){
+        BX.Ylab.MeetingCalendar.create();
+    })
+</script>
