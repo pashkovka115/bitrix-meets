@@ -1,0 +1,7 @@
+<?php
+$MESS["INTEGRATION_FORM_NAME_FIELD"] = "Название интеграции: ";
+$MESS["INTEGRATION_FORM_ACTIVITY_FIELD"] = "Активность: ";
+$MESS["INTEGRATION_INTEGRATION_REF_ACTIVITY_FIELD"] = "Ссылка на класс интеграции: ";
+$MESS["INTEGRATION_FORM_LOGIN_FIELD"] = "Логин: ";
+$MESS["INTEGRATION_FORM_PASSWORD_FIELD"] = "Пароль: ";
+$MESS["INTEGRATION_FORM_SUBMIT_BUTTON"] = "Создать";

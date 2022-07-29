@@ -2,10 +2,11 @@
 
 namespace Ylab\Meetings;
 
+use Bitrix\Calendar\Internals\TypeTable;
 use Bitrix\Main\Entity;
-use Bitrix\Main\ORM\Query\Join;
-use Bitrix\Main\ORM\Fields\Relations\Reference;
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\ORM\Fields\Relations\Reference;
+use Bitrix\Main\ORM\Query\Join;
 
 /**
  * Class for ORM Entity Room
@@ -37,7 +38,7 @@ class RoomTable extends Entity\DataManager
                 'validation' => function () {
                     return [
                         //Регулярное выражение для проверки ID - только цифры
-                        new Entity\Validator\RegExp('[0-9]+')
+                        new Entity\Validator\RegExp('/[0-9]+/'),
                     ];
                 },
             ]),
@@ -47,8 +48,16 @@ class RoomTable extends Entity\DataManager
                 'title' => Loc::getMessage('ROOM_ENTITY_NAME_FIELD'),
                 'validation' => function () {
                     return [
+                        // Уникальность названия
+                        new Entity\Validator\Unique(),
                         //Проверка на минимальную и максимальную длину строки
                         new Entity\Validator\Length(3, 15),
+                        // Регулярное выражение для проверки
+                        // ^[a-zA-Z\p{Cyrillic}] - первый символ  с буквы (кириллицы/латиницы)
+                        // [a-zA-Z\p{Cyrillic}0-9\s\-] - остальные символы могут быть буквами и цифрами и символ '-'
+                        // /s - пробел
+                        // /u - для обозначения того что внутри фигурных скобок Cyrillic это набор юникод-символов
+                        new Entity\Validator\RegExp('/^[a-zA-Z\p{Cyrillic}][a-zA-Z\p{Cyrillic}0-9\s\-]/u'),
                     ];
                 },
             ]),
@@ -61,11 +70,11 @@ class RoomTable extends Entity\DataManager
             //ID интеграции
             new Entity\IntegerField('INTEGRATION_ID', [
                 'required' => true,
-                'title' => Loc::getMessage('ROOM_ENTITY_INTEGRATION_ID_FIELD'),
+                Loc::getMessage('ROOM_ENTITY_INTEGRATION_ID_FIELD'),
                 'validation' => function () {
                     return [
                         //Регулярное выражение для проверки ID - только цифры
-                        new Entity\Validator\RegExp('[0-9]+')
+                        new Entity\Validator\RegExp('/[0-9]+/')
                     ];
                 },
             ]),
@@ -74,6 +83,19 @@ class RoomTable extends Entity\DataManager
                 'INTEGRATION',
                 IntegrationTable::class,
                 Join::on('this.INTEGRATION_ID', 'ref.ID')
+            ))
+                ->configureJoinType('inner'),
+
+            //ID типа календаря
+            new Entity\IntegerField('CALENDAR_TYPE_XML_ID', [
+                'required' => true,
+                Loc::getMessage('ROOM_ENTITY_INTEGRATION_ID_FIELD'),
+            ]),
+            //JOIN на интеграцию (отношение "1:1")
+            (new Reference(
+                'CALENDARTYPE',
+                TypeTable::class,
+                Join::on('this.CALENDAR_TYPE_XML_ID', 'ref.XML_ID')
             ))
                 ->configureJoinType('inner')
         ];
