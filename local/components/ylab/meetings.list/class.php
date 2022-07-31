@@ -4,12 +4,8 @@ use Bitrix\Main\Grid\Options as GridOptions;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\UI\PageNavigation;
 use Bitrix\Main\Loader;
-use Bitrix\Main\ORM;
 use Bitrix\Main\UI\Filter\Options as FilterOptions;
-use Ylab\Meetings\IntegrationTable;
-use Bitrix\Calendar\Internals\TypeTable;
-use Ylab\Meetings\RoomTable;
-
+use Ylab\Meetings\Repository\BaseRepository;
 
 /**
  * Класс для отображения списков
@@ -32,6 +28,10 @@ class MeetingsListComponent extends CBitrixComponent
     private array $filterFields;
     /** @var ?PageNavigation $gridNav Параметры навигации грида */
     private ?PageNavigation $gridNav = null;
+    /** @var BaseRepository $repository Ссылка на объект репозитория */
+    private BaseRepository $repository;
+    /** @var string $repositoryName Имя выбранного репозитория */
+    private string $repositoryName;
 
 
     /**
@@ -49,9 +49,30 @@ class MeetingsListComponent extends CBitrixComponent
 
         $this->templateName = $this->GetTemplateName();
 
-        if (Loader::IncludeModule('ylab.meetings')) {
+        if (Loader::IncludeModule('ylab.meetings')&& CModule::IncludeModule("calendar")) {
 
             $action = $this->arParams['ACTION'];
+
+            $this->arResult['IS_MODULE_LOAD'] = true;
+
+            if (is_string($this->arParams['LIST_ID'])) {
+                $this->listId = $this->arParams['LIST_ID'];
+            }
+            if (is_string($this->arParams['ORM_NAME'])) {
+                $this->ormClassName = $this->arParams['ORM_NAME'];
+            }
+            if (is_array($this->arParams['COLUMN_FIELDS'])) {
+                $this->columnFields = $this->arParams['COLUMN_FIELDS'];
+            }
+            if (is_array($this->arParams['FILTER_FIELDS'])) {
+                $this->filterFields = $this->arParams['FILTER_FIELDS'];
+            }
+            if (is_string($this->arParams['REPOSITORY'])) {
+                $this->repositoryName = $this->arParams['REPOSITORY'];
+            }
+
+            $ormNam = 'Ylab\Meetings\Repository\\' . $this->repositoryName;
+            $this->repository = new $ormNam();
 
             if ($action['NAME'] == 'add_item') {
                 $this->setTemplateName('edit');
@@ -73,26 +94,12 @@ class MeetingsListComponent extends CBitrixComponent
             }
 
             if ($action['NAME'] == 'delete_burger') {
-                $deleteResult = $this->deleteRoom($action['ID']);
+                $deleteResult = $this->repository->delete($action['ID']);
+
+
                 if ($deleteResult->isSuccess()) {
                     LocalRedirect("/bitrix/admin/ylab.meetings_rooms.php");
                 }
-            }
-
-
-            $this->arResult['IS_MODULE_LOAD'] = true;
-
-            if (is_string($this->arParams['LIST_ID'])) {
-                $this->listId = $this->arParams['LIST_ID'];
-            }
-            if (is_string($this->arParams['ORM_NAME'])) {
-                $this->ormClassName = $this->arParams['ORM_NAME'];
-            }
-            if (is_array($this->arParams['COLUMN_FIELDS'])) {
-                $this->columnFields = $this->arParams['COLUMN_FIELDS'];
-            }
-            if (is_array($this->arParams['FILTER_FIELDS'])) {
-                $this->filterFields = $this->arParams['FILTER_FIELDS'];
             }
 
             if ($this->templateName == 'grid') {
@@ -235,13 +242,7 @@ class MeetingsListComponent extends CBitrixComponent
                 }
             }
 
-            $query = new ORM\Query\Query('Ylab\Meetings\\' . $this->ormClassName);
-
-            $elements = $query
-              ->setSelect($columnFields)
-              ->exec();
-
-            $result = $elements->fetchAll();
+            $result = $this->repository->fetchAll([], $columnFields, [], [], []);
 
         }
 
@@ -276,23 +277,19 @@ class MeetingsListComponent extends CBitrixComponent
                 }
             }
 
-            $ormNam = 'Ylab\Meetings\\' . $this->ormClassName;
+
 
             $arCurSort = $this->getObGridParams()->getSorting(['sort' => ['ID' => 'DESC']])['sort'];
             $arFilter = $this->getGridFilterValues();
 
-            $elements = $ormNam::GetList([
-              'filter' => $arFilter,
-              "count_total" => true,
-              "offset" => $this->getGridNav()->getOffset(),
-              "limit" => $this->getGridNav()->getLimit(),
-              'order' => $arCurSort,
-              'select' => $columnFields,
-            ]);
+            $this->getGridNav()->setRecordCount($this->repository->getCount([]));
 
-            $this->getGridNav()->setRecordCount($elements->getCount());
-
-            $result = $elements->fetchAll();
+            $result = $this->repository->fetchAll(
+              $arFilter,
+              $columnFields,
+              $arCurSort,
+              $this->getGridNav()->getOffset(),
+              $this->getGridNav()->getLimit());
 
         }
 
@@ -348,7 +345,7 @@ class MeetingsListComponent extends CBitrixComponent
 
 
             // Получаем имя вызываемого ORM класса
-            $ormNam = 'Ylab\Meetings\\' . $this->ormClassName;
+            $ormNam = 'Ylab\Meetings\Orm\\' . $this->ormClassName;
 
             // Читаем ORM
             $mapObjects = $ormNam::getMap();
@@ -370,8 +367,9 @@ class MeetingsListComponent extends CBitrixComponent
                 } // Тип поля из ORM есть в настройках и он референсный
                 elseif (in_array($mapObject->getName(), $arrFieldNames) && $fieldTypes[4] == 'Relations') {
 
+
                     $ormRefClaccNamePieses = explode("\\", $mapObject->getDataType());
-                    $ormRefClaccName = strtoupper($ormRefClaccNamePieses[3]);
+                    $ormRefClaccName = strtoupper(array_pop($ormRefClaccNamePieses));
 
                     // вытягиваем из рефернсной ORM необходимый 'name' и 'title'
                     foreach ($arrRefElements as $key => $value) {
@@ -587,15 +585,6 @@ class MeetingsListComponent extends CBitrixComponent
         return $arFilter;
     }
 
-    /**
-     * @return CAllMain|CMain
-     * Обёртка для удобства использования над глобальной переменной $APPLICATION
-     */
-    private function app()
-    {
-        global $APPLICATION;
-        return $APPLICATION;
-    }
 
     /**
      * Метод возвращающий html код кнопки добавления
@@ -616,19 +605,6 @@ class MeetingsListComponent extends CBitrixComponent
         return $addButton->render();
     }
 
-    /**
-     * Метод возвращающий кнопки для панели действий грида
-     * TODO: использовать BX.Ajax
-     *
-     * @return array
-     */
-    public function getActionPanelButtons(): array
-    {
-        $snippets = new \Bitrix\Main\Grid\Panel\Snippet();
-        $removeButton = $snippets->getRemoveButton();
-        $editButton = $snippets->getEditButton();
-        return ['EDIT' => $editButton, 'REMOVE' => $removeButton];
-    }
 
     /**
      * Возвращает ссылку на ajax.php файла в папке компонента
@@ -638,46 +614,6 @@ class MeetingsListComponent extends CBitrixComponent
     public function getAjaxPath(): string
     {
         return $this->getPath() . '/ajax.php';
-    }
-
-    /**
-     * @param array $fields
-     * @return \Bitrix\Main\ORM\Data\AddResult
-     * @throws Exception
-     */
-    private function addRoom(array $fields): \Bitrix\Main\ORM\Data\AddResult
-    {
-
-        return RoomTable::add(array(
-          'NAME' => $fields['NAME'],
-          'ACTIVITY' => $fields['ACTIVITY'],
-          'INTEGRATION_ID' => $fields['INTEGRATION_ID'],
-        ));
-    }
-
-    private function editRoom($fields)
-    {
-        /** @var Bitrix\Main\Entity\UpdateResult $result */
-        foreach ($fields as $id => $f)
-            $result = RoomTable::update($id, array(
-              'NAME' => $f['NAME'],
-              'ACTIVITY' => $f['ACTIVITY'],
-              'INTEGRATION_ID' => $f['INTEGRATION_ID'],
-            ));
-
-        return $result;
-    }
-
-    private function deleteRoom($id): \Bitrix\Main\ORM\Data\DeleteResult
-    {
-        /** @var Bitrix\Main\Entity\UpdateResult $result */
-        if (is_array($id)) {
-            foreach ($id as $item)
-                $result = RoomTable::delete($item);
-        } else {
-            $result = RoomTable::delete($id);
-        }
-        return $result;
     }
 
 }

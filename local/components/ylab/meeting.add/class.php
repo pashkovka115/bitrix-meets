@@ -12,8 +12,10 @@ use Bitrix\Main\Application;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Calendar\Internals\TypeTable;
-use Ylab\Meetings\IntegrationTable;
 use Ylab\Meetings\Calendar\CalendarType;
+use Ylab\Meetings\Orm\IntegrationTable;
+use Ylab\Meetings\Orm\RoomTable;
+use Ylab\Meetings\Repository\RoomRepository;
 
 
 class YlabMeetingAdd extends CBitrixComponent
@@ -92,7 +94,8 @@ class YlabMeetingAdd extends CBitrixComponent
                   'CALENDAR_TYPE_XML_ID' => $request->getPost('CALENDAR_TYPE_XML_ID'),
                 ];
 
-                $addResult = $this->addRoom($fields);
+                $roomRepository = new RoomRepository();
+                $addResult = $roomRepository->add([], $fields);
 
                 if (!$addResult->isSuccess()) {
                     $integrations = IntegrationTable::getList();
@@ -108,24 +111,6 @@ class YlabMeetingAdd extends CBitrixComponent
             }
         }
 
-    }
-
-
-    /**
-     * @param array $fields
-     * @return \Bitrix\Main\ORM\Data\AddResult
-     * @throws Exception
-     */
-
-    private function addRoom(array $fields): \Bitrix\Main\ORM\Data\AddResult
-    {
-
-        return \Ylab\Meetings\RoomTable::add(array(
-          'NAME' => $fields['NAME'],
-          'ACTIVITY' => $fields['ACTIVITY'],
-          'INTEGRATION_ID' => $fields['INTEGRATION_ID'],
-          'CALENDAR_TYPE_XML_ID' => $fields['CALENDAR_TYPE_XML_ID'],
-        ));
     }
 
 
