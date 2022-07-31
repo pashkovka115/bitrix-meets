@@ -102,7 +102,7 @@ class RoomRepository extends BaseRepository
     public function update($id, $fields): \Bitrix\Main\ORM\Data\UpdateResult
     {
         $res = RoomTable::update($id, $fields);
-        $this->clearCache($id);
+        $this->clearCache();
         return $res;
     }
 
@@ -124,7 +124,7 @@ class RoomRepository extends BaseRepository
             $result = RoomTable::delete($id);
         }
 
-        $this->clearCache($id);
+        $this->clearCache();
 
         return $result;
     }
@@ -133,14 +133,13 @@ class RoomRepository extends BaseRepository
     /**
      * Очистка кэша
      *
-     * @param $id
      * @return mixed|void
      */
-    public function clearCache($id)
+    public function clearCache()
     {
         $tableName = "orm_". RoomTable::getTableName();
         $managedcache = Application::getInstance()->getManagedCache();
-        $managedcache->clean($id, $tableName);
+        $managedcache->cleanDir($tableName);
     }
 
 

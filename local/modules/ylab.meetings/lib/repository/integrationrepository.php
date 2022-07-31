@@ -102,7 +102,7 @@ class IntegrationRepository extends BaseRepository
     public function update($id, $fields)
     {
         $res = IntegrationTable::update($id, $fields);
-        $this->clearCache($id);
+        $this->clearCache();
         return $res;
     }
 
@@ -125,7 +125,7 @@ class IntegrationRepository extends BaseRepository
             $result = IntegrationTable::delete($id);
         }
 
-        $this->clearCache($id);
+        $this->clearCache();
 
         return $result;
     }
@@ -134,14 +134,13 @@ class IntegrationRepository extends BaseRepository
     /**
      * Очистка кэша
      *
-     * @param $id
      * @return mixed|void
      */
-    public function clearCache($id)
+    public function clearCache()
     {
         $tableName = "orm_". IntegrationTable::getTableName();
         $managedcache = Application::getInstance()->getManagedCache();
-        $managedcache->clean($id, $tableName);
+        $managedcache->cleanDir($tableName);
     }
 
 

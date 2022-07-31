@@ -102,7 +102,7 @@ abstract class BaseRepository implements RepositoryInterface
     public function update($id, $fields)
     {
         $res = DataManager::update($id, $fields);
-        $this->clearCache($id);
+        $this->clearCache();
         return $res;
     }
 
@@ -124,22 +124,21 @@ abstract class BaseRepository implements RepositoryInterface
             $result = DataManager::delete($id);
         }
 
-        $this->clearCache($id);
+        $this->clearCache();
         return $result;
     }
 
 
     /**
-     * Очистка кэша по ID
+     * Очистка кэша
      *
-     * @param $id
      * @return mixed|void
      */
-    public function clearCache($id)
+    public function clearCache()
     {
         $tableName = "orm_". DataManager::getTableName();
         $managedcache = Application::getInstance()->getManagedCache();
-        $managedcache->clean($id, $tableName);
+        $managedcache->cleanDir($tableName);
     }
 
 

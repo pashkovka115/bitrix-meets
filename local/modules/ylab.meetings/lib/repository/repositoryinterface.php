@@ -68,11 +68,11 @@ interface RepositoryInterface
      */
     public function delete($id);
 
+
     /**
      * Очистка кэша
      *
-     * @param $id
      * @return mixed
      */
-    public function clearCache($id);
+    public function clearCache();
 }

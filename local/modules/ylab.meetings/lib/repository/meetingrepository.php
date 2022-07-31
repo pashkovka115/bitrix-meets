@@ -5,7 +5,10 @@ namespace Ylab\Meetings\Repository;
 use Bitrix\Main\Application;
 use Bitrix\Main\Loader;
 use Bitrix\Highloadblock as HL;
+use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ORM;
+use CUserFieldEnum;
+use Exception;
 
 /**
  * Class MeetingRepository
@@ -16,9 +19,7 @@ class MeetingRepository implements RepositoryInterface
 
     /** @var string $hlblock_id ID HL блока */
     private string $hlblock_id;
-    /**
-     * @var ORM\Data\DataManager|string
-     */
+    /** @var ORM\Data\DataManager|string Класс сущности HL блока */
     private $entityDataClass;
 
     /**
@@ -27,21 +28,32 @@ class MeetingRepository implements RepositoryInterface
      */
     public function __construct(string $hlblock_id)
     {
-        $this->hlblock_id = $hlblock_id;
 
         if (Loader::includeModule('highloadblock')) {
 
-            $this->entityDataClass = $this->getEntity();
+            $hlblock = HL\HighloadBlockTable::getById($hlblock_id)->fetch();
+
+            if (!empty($hlblock)) {
+
+                $this->hlblock_id = $hlblock_id;
+                $this->entityDataClass = $this->getEntityDataClass();
+
+            } else {
+                throw new Exception(Loc::getMessage('YLAB_MEETINGREPOSITORY_ERROR1'));
+            }
+
         }
     }
 
     /**
+     * Возвращает название класса сущности
+     *
      * @return ORM\Data\DataManager|string
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Bitrix\Main\ObjectPropertyException
      * @throws \Bitrix\Main\SystemException
      */
-    public function getEntity()
+    public function getEntityDataClass()
     {
         $hlblock = HL\HighloadBlockTable::getById($this->hlblock_id)->fetch();
 
@@ -96,6 +108,7 @@ class MeetingRepository implements RepositoryInterface
         ])->fetchAll();
     }
 
+
     /**
      * Метод возвращает количество записей для конкретного запроса
      *
@@ -133,7 +146,7 @@ class MeetingRepository implements RepositoryInterface
     public function update($id, $fields)
     {
         $res = $this->entityDataClass::update($id, $fields);
-        $this->clearCache($id);
+        $this->clearCache();
         return $res;
     }
 
@@ -153,29 +166,104 @@ class MeetingRepository implements RepositoryInterface
             $result = $this->entityDataClass::delete($id);
         }
 
-        $this->clearCache($id);
+        $this->clearCache();
 
         return $result;
     }
 
+
     /**
-     * Очистка кэша
+     *  Очистка кэша
      *
-     * @param $id
      * @return mixed|void
      */
-    public function clearCache($id)
+    public function clearCache()
     {
-        $tableName = "orm_". $this->entityDataClass::getTableName();
+        $tableName = "orm_" . $this->entityDataClass::getTableName();
         $managedcache = Application::getInstance()->getManagedCache();
-        $managedcache->clean($id, $tableName);
+        $managedcache->cleanDir($tableName);
     }
 
-    public function getEnumIdByXmlId($field, $xmlId) {
+
+    /**
+     * Метод возвращает установленный EnumXmlId для пользовательского поля типа список
+     *
+     * @param $field - Код поля (string)
+     * @param $id - ID записи HL блока
+     * @return mixed|null
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Bitrix\Main\ObjectPropertyException
+     * @throws \Bitrix\Main\SystemException
+     */
+    public function getEnumXmlIdById($field, $id)
+    {
+
+        $hlblock = HL\HighloadBlockTable::getById($this->hlblock_id)->fetch();
+        $entity = HL\HighloadBlockTable::compileEntity($hlblock);
+
+        $fields = [];
+        $enumXmlId = null;
+
+        foreach ($entity->getFields() as $fld) {
+            $fields[] = $fld->getName();
+        }
+
+        if (in_array($field, $fields)) {
+            $result = $this->fetchAll(array("ID" => $id), array($field => $field), array(), array(), array());
+        }
+
+        if ($result) {
+            $UserField = CUserFieldEnum::GetList(array(), array("ID" => $result[0][$field]));
+            $enumXmlId = $UserField->arResult[0]["XML_ID"];
+        }
+
+        return $enumXmlId;
 
     }
 
-    public function getEnumXmlIdById($field, $id) {
 
+    /**
+     * Метод-хелпер, возвращает значение XML_ID
+     * элемента поля типа список по ID элемента списка
+     *
+     * @param $field - Код поля (string)
+     * @param $enum_id - ID элемента списка
+     * @return mixed
+     */
+    public function getEnumXmlIdByEnumId($field, $enum_id)
+    {
+        global $USER_FIELD_MANAGER;
+        $arFields = $USER_FIELD_MANAGER->GetUserFields("HLBLOCK_" . $this->hlblock_id);
+
+        $field_id = $arFields[$field]["ID"];
+
+        $obEnum = new CUserFieldEnum;
+        $rsEnum = $obEnum->GetList(array(), array("ID" => $enum_id, "USER_FIELD_ID" => $field_id,));
+
+        return $rsEnum->arResult[0]["XML_ID"];
     }
+
+
+    /**
+     * Метод-хелпер, возвращает значение ID
+     * элемента поля типа список по XML_ID элемента списка
+     *
+     * @param $field - Код поля (string)
+     * @param $enumXmlId - XML_ID элемента списка
+     * @return mixed
+     */
+    public function getEnumIdByEnumXmlId($field, $enumXmlId)
+    {
+        global $USER_FIELD_MANAGER;
+        $arFields = $USER_FIELD_MANAGER->GetUserFields("HLBLOCK_" . $this->hlblock_id);
+
+        $field_id = $arFields[$field]["ID"];
+
+        $obEnum = new CUserFieldEnum;
+        $rsEnum = $obEnum->GetList(array(), array("XML_ID" => $enumXmlId, "USER_FIELD_ID" => $field_id,));
+
+        return $rsEnum->arResult[0]["ID"];
+    }
+
+
 }
