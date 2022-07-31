@@ -20,6 +20,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_admin.p
     ),
     "LIST_ID" => "rooms_list",
     "ORM_NAME" => "RoomTable",
+    "REPOSITORY" => "RoomRepository",
     "COMPONENT_TEMPLATE" => "grid"
   ),
   false
