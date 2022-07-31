@@ -11,6 +11,8 @@ use CUserFieldEnum;
 use Exception;
 
 /**
+ * Класс для работы HL блоками
+ *
  * Class MeetingRepository
  * @package Ylab\Meetings\Repository
  */
