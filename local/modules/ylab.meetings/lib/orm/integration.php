@@ -1,6 +1,6 @@
 <?php
 
-namespace Ylab\Meetings;
+namespace Ylab\Meetings\Orm;
 
 use Bitrix\Main\Entity;
 use Bitrix\Main\ORM\Fields\Relations\OneToMany;

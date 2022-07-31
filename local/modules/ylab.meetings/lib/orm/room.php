@@ -1,6 +1,6 @@
 <?php
 
-namespace Ylab\Meetings;
+namespace Ylab\Meetings\Orm;
 
 use Bitrix\Calendar\Internals\TypeTable;
 use Bitrix\Main\Entity;

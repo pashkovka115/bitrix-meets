@@ -3,7 +3,7 @@
 namespace Ylab\Meetings\Repository;
 
 use Bitrix\Main\Application;
-use Ylab\Meetings\RoomTable;
+use Ylab\Meetings\Orm\RoomTable;
 use Bitrix\Main\ORM;
 
 

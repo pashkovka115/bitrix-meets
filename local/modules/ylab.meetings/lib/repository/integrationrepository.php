@@ -3,7 +3,7 @@
 namespace Ylab\Meetings\Repository;
 
 use Bitrix\Main\Application;
-use Ylab\Meetings\IntegrationTable;
+use Ylab\Meetings\Orm\IntegrationTable;
 use Bitrix\Main\ORM;
 
 
