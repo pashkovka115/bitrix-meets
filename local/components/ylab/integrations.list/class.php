@@ -114,7 +114,7 @@ class IntegrationsListComponent extends CBitrixComponent
             $arGridElement['actions'] = [
                 [
                     'text' => Loc::getMessage('YLAB_MEETING_LIST_CLASS_DELETE'),
-                    'onclick' => 'BX.Ylab.Integrations.LeftPanel.action(' .
+                    'onclick' => 'BX.Ylab.Integrations.LeftPanelAction(' .
                         CUtil::PhpToJSObject([
                             'action' => 'delete_burger',
                             'id' => $arItem['ID'],
@@ -122,7 +122,7 @@ class IntegrationsListComponent extends CBitrixComponent
                 ],
                 [
                     'text' => Loc::getMessage('YLAB_MEETING_LIST_CLASS_EDIT'),
-                    'onclick' => 'BX.Ylab.Integrations.Grid.LeftPanel.create(' . CUtil::PhpToJSObject($this->getAjaxPath()) . ', ' .
+                    'onclick' => 'BX.Ylab.Integrations.LeftPanelAction(' . CUtil::PhpToJSObject($this->getAjaxPath()) . ', ' .
                         CUtil::PhpToJSObject([
                             'sessid' => bitrix_sessid(),
                             'action' => 'edit_burger',
@@ -337,7 +337,7 @@ class IntegrationsListComponent extends CBitrixComponent
     {
         \Bitrix\Main\UI\Extension::load("ui.buttons.icons");
         $addButton = new Bitrix\UI\Buttons\CreateButton();
-        $addButton->addAttribute('onclick', 'popup().Show()');
+        $addButton->addAttribute('onclick', 'BX.Ylab.Integrations.PopUp().Show()');
         $addButton->addClass('ui-btn-icon-add');
         $addButton->setText(Loc::getMessage('BUTTON_ADD_INTEGRATION'));
         $addButton->setStyles(['float' => 'right']);
