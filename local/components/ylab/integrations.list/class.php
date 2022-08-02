@@ -62,47 +62,6 @@ class IntegrationsListComponent extends CBitrixComponent
     {
         if (Loader::IncludeModule('ylab.meetings')) {
 
-            $action = $this->arParams['ACTION'];
-            if ($action['NAME'] == 'add') {
-                $this->setTemplateName('edit');
-                $this->includeComponentTemplate('addintegrationform');
-                return;
-            }
-            if ($action['NAME'] == 'submitadd') {
-                $addResult = $this->addIntegration($action['FIELDS']);
-                if (!$addResult->isSuccess()) {
-                    $this->arResult['SUBMIT_ERROR'] = $addResult->getErrorMessages();
-                    $this->setTemplateName('edit');
-                    $this->includeComponentTemplate('addintegrationform');
-                    return;
-                } else {
-                    $this->arResult['ADD_SUCCESS_INTEGRATION_NAME'] = $addResult->getData()['NAME'];
-                }
-            }
-            if ($action['NAME'] == 'edit_burger') {
-                $this->fillEditFields($action['ID']);
-                $this->setTemplateName('edit');
-                $this->includeComponentTemplate('editintegrationform');
-                return;
-            }
-
-            if ($action['NAME'] == 'submitedit') {
-                $editResult = $this->editIntegration($action['FIELDS']);
-                if (!$editResult->isSuccess()) {
-                    $this->arResult['SUBMIT_ERROR'] = $editResult->getErrorMessages();
-
-                    $this->fillEditFields(key($action['FIELDS']));
-                    $this->setTemplateName('edit');
-                    $this->arResult['ID'] = key($action['FIELDS']);
-                    $this->includeComponentTemplate('editintegrationform');
-                    return;
-                }
-            }
-
-            if ($action['NAME'] == 'delete_burger') {
-                $this->deleteIntegration($action['ID']);
-            }
-
             $this->showByGrid();
             $this->includeComponentTemplate();
 
@@ -425,17 +384,6 @@ class IntegrationsListComponent extends CBitrixComponent
         return $result;
     }
 
-    private function deleteIntegration($id): \Bitrix\Main\ORM\Data\DeleteResult
-    {
-        /** @var Bitrix\Main\Entity\UpdateResult $result */
-        if (is_array($id)) {
-            foreach ($id as $item)
-                $result = IntegrationTable::delete($item);
-        } else {
-            $result = IntegrationTable::delete($id);
-        }
-        return $result;
-    }
 
     private function fillEditFields($id)
     {
