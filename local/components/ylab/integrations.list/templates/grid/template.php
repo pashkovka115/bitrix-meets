@@ -49,7 +49,7 @@ global $APPLICATION;
                     'GRID_ID' => $arResult['GRID_ID'],
                     'COLUMNS' => $arResult['GRID_COLUMNS'],
                     'ROWS' => $arResult['GRID_ROWS'],
-                    'SHOW_ROW_CHECKBOXES' => true,
+                    'SHOW_ROW_CHECKBOXES' => false,
                     'NAV_OBJECT' => $arResult['GRID_NAV'],
                     'AJAX_MODE' => 'Y',
                     'AJAX_ID' => CAjax::getComponentID('bitrix:main.ui.grid', '.default', ''),
@@ -62,25 +62,15 @@ global $APPLICATION;
                     ],
                     'AJAX_OPTION_JUMP' => 'Y',
                     "AJAX_OPTION_STYLE" => "Y",
-                    'SHOW_CHECK_ALL_CHECKBOXES' => true,
+                    'SHOW_CHECK_ALL_CHECKBOXES' => false,
                     'SHOW_ROW_ACTIONS_MENU' => true,
                     'SHOW_GRID_SETTINGS_MENU' => true,
                     'SHOW_NAVIGATION_PANEL' => true,
                     'SHOW_PAGINATION' => true,
-                    'SHOW_SELECTED_COUNTER' => true,
+                    'SHOW_SELECTED_COUNTER' => false,
                     'SHOW_TOTAL_COUNTER' => true,
                     'SHOW_PAGESIZE' => true,
-                    'SHOW_ACTION_PANEL' => true,
-                    'ACTION_PANEL' => [
-                        'GROUPS' => [
-                            'TYPE' => [
-                                'ITEMS' => [
-                                    $arResult['BUTTONS']['ACTION']['EDIT'],
-                                    $arResult['BUTTONS']['ACTION']['REMOVE'],
-                                ],
-                            ]
-                        ],
-                    ],
+                    'SHOW_ACTION_PANEL' => false,
                     'ALLOW_COLUMNS_SORT' => true,
                     'ALLOW_COLUMNS_RESIZE' => true,
                     'ALLOW_HORIZONTAL_SCROLL' => true,

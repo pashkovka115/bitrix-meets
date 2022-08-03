@@ -68,15 +68,18 @@ class IntegrationsListComponent extends CBitrixComponent
         }
     }
 
+
     /**
      * Отображение через грид
      * Получение в $arResult параметров для грида и кнопок
+     *
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Bitrix\Main\LoaderException
      */
     public function showByGrid(): void
     {
 
         $this->arResult['GRID_ID'] = $this->getGridId();
-        AddMessage2Log($this->getGridId());
         $this->arResult['GRID_COLUMNS'] = $this->getGridColumns();
         $this->arResult['GRID_ROWS'] = $this->getGridRows();
         $this->arResult['GRID_NAV'] = $this->getGridNav();
@@ -84,8 +87,7 @@ class IntegrationsListComponent extends CBitrixComponent
         $this->arResult['RECORD_COUNT'] = $this->getGridNav()->getRecordCount();
 
         $this->arResult['BUTTONS']['ADD'] = $this->getAddButton();
-        $this->arResult['BUTTONS']['ACTION'] = $this->getActionPanelButtons();
-        $this->arResult['AJAX_PATH'] = $this->getAjaxPath();
+
     }
 
 
@@ -122,9 +124,8 @@ class IntegrationsListComponent extends CBitrixComponent
                 ],
                 [
                     'text' => Loc::getMessage('YLAB_MEETING_LIST_CLASS_EDIT'),
-                    'onclick' => 'BX.Ylab.Integrations.LeftPanelAction(' . CUtil::PhpToJSObject($this->getAjaxPath()) . ', ' .
+                    'onclick' => 'BX.Ylab.Integrations.LeftPanelAction(' .
                         CUtil::PhpToJSObject([
-                            'sessid' => bitrix_sessid(),
                             'action' => 'edit_burger',
                             'id' => $arItem['ID'],
                         ]) . ')'
@@ -297,7 +298,6 @@ class IntegrationsListComponent extends CBitrixComponent
         );
     }
 
-
     /**
      * Подготавливает параметры фильтра
      *
@@ -326,6 +326,7 @@ class IntegrationsListComponent extends CBitrixComponent
         return $arFilter;
     }
 
+
     /**
      * Метод возвращающий html код кнопки добавления
      *
@@ -337,7 +338,7 @@ class IntegrationsListComponent extends CBitrixComponent
     {
         \Bitrix\Main\UI\Extension::load("ui.buttons.icons");
         $addButton = new Bitrix\UI\Buttons\CreateButton();
-        $addButton->addAttribute('onclick', 'BX.Ylab.Integrations.PopUp().Show()');
+        $addButton->addAttribute('onclick', 'BX.Ylab.Integrations.PopUp(\'add\').Show()');
         $addButton->addClass('ui-btn-icon-add');
         $addButton->setText(Loc::getMessage('BUTTON_ADD_INTEGRATION'));
         $addButton->setStyles(['float' => 'right']);
@@ -345,60 +346,4 @@ class IntegrationsListComponent extends CBitrixComponent
         return $addButton->render();
     }
 
-    /**
-     * Метод возвращающий кнопки для панели действий грида
-     * TODO: использовать BX.Ajax
-     *
-     * @return array
-     */
-    public function getActionPanelButtons(): array
-    {
-        $snippets = new \Bitrix\Main\Grid\Panel\Snippet();
-        $removeButton = $snippets->getRemoveButton();
-        $editButton = $snippets->getEditButton();
-        return ['EDIT' => $editButton, 'REMOVE' => $removeButton];
-    }
-
-    /**
-     * Возвращает ссылку на ajax.php файла в папке компонента
-     *
-     * @return string
-     */
-    public function getAjaxPath(): string
-    {
-        return $this->getPath() . '/ajax.php';
-    }
-
-    private function editIntegration($fields)
-    {
-        /** @var Bitrix\Main\Entity\UpdateResult $result */
-        foreach ($fields as $id => $f)
-            $result = IntegrationTable::update($id, array(
-                'NAME' => $f['NAME'],
-                'ACTIVITY' => $f['ACTIVITY'],
-                'INTEGRATION_REF' => $f['INTEGRATION_REF'],
-                'LOGIN' => $f['LOGIN'],
-                'PASSWORD' => $f['PASSWORD']
-            ));
-
-        return $result;
-    }
-
-
-    private function fillEditFields($id)
-    {
-        $res = Ylab\Meetings\IntegrationTable::getList([
-            'filter' => ['ID' => $id],
-            'select' => [
-                "*",
-            ]]);
-        foreach ($res->fetchAll() as $row) {
-            $this->arResult["ID"] = $row['ID'];
-            $this->arResult["NAME"] = $row['NAME'];
-            $this->arResult["ACTIVITY"] = $row['ACTIVITY'];
-            $this->arResult["INTEGRATION_REF"] = $row['INTEGRATION_REF'];
-            $this->arResult["LOGIN"] = $row['LOGIN'];
-            $this->arResult["PASSWORD"] = $row['PASSWORD'];
-        }
-    }
 }

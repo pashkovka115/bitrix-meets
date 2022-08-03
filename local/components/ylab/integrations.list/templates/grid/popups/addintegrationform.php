@@ -2,12 +2,12 @@
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
 
 use \Bitrix\Main\Localization\Loc;
-use Bitrix\Main\Page\Asset;
 
 CJSCore::Init(array('ajax'));
 
 ?>
 <div id="add-form">
+    <input id="input-id" type="hidden"'>
     <label for="NAME"><?= Loc::getMessage('INTEGRATION_FORM_NAME_FIELD') ?> </label>
     <p><input id="input-name" type="string" name="NAME"></p>
 
